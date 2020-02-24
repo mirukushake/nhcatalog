@@ -1,0 +1,26 @@
+// Ref: https://github.com/nuxt-community/vuetify-module#customvariables
+//
+// The variables you want to modify
+// $font-size-root: 20px;
+
+@import url('https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c&display=swap');
+
+
+$body-font-family: 'M PLUS Rounded 1c', sans-serif !default;
+
+$primary: #ed8d8c;
+$secondary: #fff6ee;
+$accent: #e0bca0;
+$error: #f44336;
+$info: #4a98d6;
+$success: #7ca562;
+$warning: #fa952a;
+
+.v-application a {
+  text-decoration: none;
+}
+
+.v-data-table-header {
+  background-color: $secondary;
+}
+

@@ -13,5 +13,7 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
+    "semi": 0,
+    "comma-dangle": ["error", "always-multiline"],
   }
 }
