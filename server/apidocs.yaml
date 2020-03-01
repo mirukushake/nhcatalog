@@ -1,0 +1,7 @@
+openapi: 3.0
+info:
+  title: atsumare.info
+  description: The data api for atsumare.info
+  contact:
+    name: mirukushake
+  version: 1.0
