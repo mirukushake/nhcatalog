@@ -26,10 +26,6 @@ async function listCategories (ctx) {
         })
         .orderBy('order', 'name', 'id', 'identifier', 'parent', 'subtitle');
     });
-    // .withGraphFetched('names')
-    // .modifyGraph('names', (builder) => {
-    //   builder.where('lang_id', language).orWhere('lang_id', subtitle);
-    // });
   if (categories) {
     ctx.status = 200;
     ctx.body = {
