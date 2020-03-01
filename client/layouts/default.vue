@@ -22,20 +22,6 @@
       />
       <v-spacer />
 
-      <v-btn v-if="$vuetify.breakpoint.smAndUp" text class="mr-2" small to="/register">
-        {{ $t('register') }}
-      </v-btn>
-      <v-btn v-else text icon to="/register">
-        <v-icon>mdi-account-plus</v-icon>
-      </v-btn>
-
-      <v-btn v-if="$vuetify.breakpoint.smAndUp" text class="mr-2" small to="/login">
-        {{ $t('login') }}
-      </v-btn>
-      <v-btn v-else text icon to="/login">
-        <v-icon>mdi-login</v-icon>
-      </v-btn>
-
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn
@@ -208,9 +194,6 @@ export default {
   computed: {
     availableLocales () {
       return this.$i18n.locales
-    },
-    currentLocale () {
-      return this.$i18n.getLocaleCookie();
     },
   },
   mounted () {

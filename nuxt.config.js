@@ -99,13 +99,13 @@ export default {
     theme: {
       themes: {
         light: {
-          primary: '#ed8d8c',
-          secondary: '#fff6ee',
-          accent: '#e0bca0',
+          primary: '#56B9C1',
+          secondary: '#71d19c',
+          accent: '#9ad4e4',
           error: '#f44336',
-          info: '#4a98d6',
-          success: '#7ca562',
-          warning: '#fa952a',
+          info: '#71d19b',
+          success: '#4eb272',
+          warning: '#cca23a',
 
         },
       },

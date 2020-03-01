@@ -1,7 +1,8 @@
 require('dotenv').config();
 
 const Koa = require('koa');
-const logger = require('koa-pino-logger');
+const { logger } = require('koa2-winston');
+const winston = require('winston');
 const cors = require('@koa/cors');
 
 // knex config
@@ -12,11 +13,14 @@ const knexConfig = require('./knexfile');
 const knex = Knex(knexConfig.development);
 Model.knex(knex);
 
+// logging config
+const transport = new winston.transports.File({ filename: process.env.LOG_FILE });
+
 // routes
-// const allRoutes = require('./routes/index');
+const allRoutes = require('./routes/data');
 
 const app = new Koa();
-const PORT = 8081;
+const PORT = process.env.SERVER_PORT || 8081;
 
 const corsOptions = {
   origin: '*',
@@ -24,19 +28,20 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// app
-//   .use(allRoutes.routes())
-//   .use(allRoutes.allowedMethods());
+app.use(allRoutes.middleware());
 
-app.use(logger());
-
-app.use((ctx) => {
-  ctx.body = 'hello world'
-  throw Error('bang!')
+// error handling
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (err) {
+    ctx.status = err.status || 500;
+    ctx.body = err.message;
+  }
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`Server listening on port: ${PORT}`);
-});
+app.use(logger({ transports: transport }));
+
+const server = app.listen(PORT);
 
 module.exports = server;

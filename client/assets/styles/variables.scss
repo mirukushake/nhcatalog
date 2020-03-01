@@ -3,10 +3,10 @@
 // The variables you want to modify
 // $font-size-root: 20px;
 
-@import url('https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c&display=swap');
+@import url('https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c|Nunito&display=swap');
 
 
-$body-font-family: 'M PLUS Rounded 1c', sans-serif !default;
+$body-font-family: 'M Plus Rounded 1c', Roboto, Verdana, sans-serif !default;
 
 $primary: #ed8d8c;
 $secondary: #fff6ee;
@@ -20,7 +20,8 @@ $warning: #fa952a;
   text-decoration: none;
 }
 
-.v-data-table-header {
-  background-color: $secondary;
+.v-data-table-header .text-start {
+  font-weight: 100;
+  color: #bbb;
 }
 
