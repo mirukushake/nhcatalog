@@ -1,29 +1,14 @@
 const Category = require('../models/category');
 
 async function listCategories (ctx) {
-  const language = ctx.query.locale;
+  const language = ctx.query.locale || 1;
   const subtitle = ctx.query.subtitle;
   const categories = await Category.query().where('parent', null)
-    .skipUndefined()
-    .joinRelated('names', { alias: 'name' })
-    .where('name.lang_id', language)
-    .select('categories.*', 'name.name as name')
-    .modify(function (qb) {
-      if (subtitle) {
-        qb.joinRelated('names', { alias: 'subtitle' }).where('subtitle.lang_id', subtitle).select('subtitle.name as subtitle');
-      }
-    })
+	.modify('setLocale', 'category_names', 'cat_id', 'categories', language, subtitle)
     .orderBy('order', 'name', 'id', 'identifier', 'parent', 'subtitle')
     .withGraphFetched('children')
     .modifyGraph('children', (builder) => {
-      builder.joinRelated('names', { alias: 'name' })
-        .where('name.lang_id', language)
-        .select('categories.*', 'name.name as name')
-        .modify(function (qb) {
-          if (subtitle) {
-            qb.joinRelated('names', { alias: 'subtitle' }).where('subtitle.lang_id', subtitle).select('subtitle.name as subtitle');
-          }
-        })
+      builder.modify('setLocale', 'category_names', 'cat_id', 'categories', language, subtitle)
         .orderBy('order', 'name', 'id', 'identifier', 'parent', 'subtitle');
     });
   if (categories) {
