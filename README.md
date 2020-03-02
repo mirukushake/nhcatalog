@@ -1,4 +1,4 @@
-# pokecollector
+# atsumareinfo (temp name)
 
 > My phenomenal Nuxt.js project
 
