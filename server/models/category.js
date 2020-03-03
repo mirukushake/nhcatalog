@@ -6,7 +6,6 @@ class Category extends BaseModel {
   }
 
   static get relationMappings () {
-
     return {
       children: {
         relation: BaseModel.HasManyRelation,

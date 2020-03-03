@@ -6,9 +6,8 @@ class Animal extends BaseModel {
   }
 
   static get relationMappings () {
-
     return {
-			
+
     };
   }
 }
