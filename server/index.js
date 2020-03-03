@@ -31,14 +31,22 @@ app.use(cors(corsOptions));
 app.use(allRoutes.middleware());
 
 // error handling
-app.use(async (ctx, next) => {
+
+const handler = async (ctx, next) => {
   try {
     await next();
   } catch (err) {
-    ctx.status = err.status || 500;
-    ctx.body = err.message;
+    ctx.response.status = err.statusCode || err.status || 500;
+    ctx.app.emit('error', err, ctx);
   }
-});
+};
+
+app.use(handler);
+
+// app.on('error', function(err) {
+//   console.log('logging error ', err.message);
+//   console.log(err);
+// });
 
 app.use(logger({ transports: transport }));
 

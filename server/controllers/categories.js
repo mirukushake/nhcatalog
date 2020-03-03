@@ -15,7 +15,7 @@ async function listCategories (ctx) {
 	builder.modify('setLocale', 'category_names', 'cat_id', 'categories', language, subtitle)
 	.orderBy('order', 'name', 'id', 'identifier', 'parent', 'subtitle');
 	});
-  if (categories) {
+  if (categories.length > 0) {
     ctx.status = 200;
     ctx.body = {
       status: 'success',
