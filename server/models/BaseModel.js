@@ -10,7 +10,7 @@ class BaseModel extends Model {
       setLocale (builder, jointable, joincol, origin, language, subtitle) {
         builder.skipUndefined().join(`${jointable} as name`, joincol, `${origin}.id`)
           .where('name.lang_id', language)
-          .select(`${origin}.*`, 'name.name as name')
+          .select('name.name as name')
           .modify(function (qb) {
             if (subtitle) {
               qb.join(`${jointable} as subtitle`, `subtitle.${joincol}`, `${origin}.id`).where('subtitle.lang_id', subtitle).select('subtitle.name as subtitle');

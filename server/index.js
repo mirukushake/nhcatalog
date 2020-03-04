@@ -17,7 +17,7 @@ Model.knex(knex);
 const transport = new winston.transports.File({ filename: process.env.LOG_FILE });
 
 // routes
-const allRoutes = require('./routes/data');
+const publicRoutes = require('./routes/public');
 
 const app = new Koa();
 const PORT = process.env.SERVER_PORT || 8081;
@@ -28,7 +28,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(allRoutes.middleware());
+app.use(publicRoutes.middleware());
 
 // error handling
 
