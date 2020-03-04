@@ -7,21 +7,23 @@ class Shop extends BaseModel {
 
   static get relationMappings () {
     const Item = require('./item');
-    
-    items: {
-      relation: BaseModel.ManyToManyRelation,
+
+    return {
+      items: {
+        relation: BaseModel.ManyToManyRelation,
         modelClass: Item,
         join: {
           from: 'shops.id',
           through: {
             from: 'shop_items.shop_id',
-            to: 'shop_items.item_id'
-            extra: ['currency_id', 'price']
+            to: 'shop_items.item_id',
+            extra: ['currency_id', 'price'],
           },
-          to: 'items.id'
-        }
-    }
+          to: 'items.id',
+        },
+      },
+    };
   }
 }
 
-module.exports = Item;
+module.exports = Shop;

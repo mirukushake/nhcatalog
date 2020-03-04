@@ -8,18 +8,19 @@ class Creature extends BaseModel {
   static get relationMappings () {
     const Item = require('./item');
     // const CreatureSeasonality = require('./creatureseasonality');
-    
+
     return {
-       item: {
+      item: {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: Item,
         join: {
           from: 'creatures.item_id',
-          to: 'items.id' 
-        }
+          to: 'items.id',
+        },
       },
-      
+
       // creature_seasonality
+    };
   }
 }
 

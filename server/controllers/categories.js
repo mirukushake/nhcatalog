@@ -19,7 +19,7 @@ async function listCategories (ctx) {
         .select('id', 'identifier', 'order')
         .orderBy('order', 'name', 'id', 'identifier', 'subtitle');
     });
-  
+
   if (categories.length > 0) {
     ctx.status = 200;
     ctx.body = {
