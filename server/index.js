@@ -17,7 +17,7 @@ Model.knex(knex);
 const transport = new winston.transports.File({ filename: process.env.LOG_FILE });
 
 // routes
-const publicRoutes = require('./routes/public');
+const publicRoutes = require('./routes/data');
 
 const app = new Koa();
 const PORT = process.env.SERVER_PORT || 8081;

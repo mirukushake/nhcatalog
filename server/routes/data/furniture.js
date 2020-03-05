@@ -8,15 +8,15 @@ const furniture = router();
 furniture.route({
   method: 'get',
   path: '/furniture',
-  handler: ctrl.listCategories,
+  // handler: ctrl.listFurniture,
 });
 
 // list of furniture by category
 
 furniture.route({
   method: 'get',
-  path: '/furniture/:id'
-  handler: null,
+  path: '/furniture/:id',
+  // handler: ctrl.singleFurniture
 })
 
 module.exports = furniture;
