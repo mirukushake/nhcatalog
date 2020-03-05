@@ -7,7 +7,7 @@ const furniture = router();
 // list of all furniture
 furniture.route({
   method: 'get',
-  path: '/furniture',
+  path: '/furniture'
   // handler: ctrl.listFurniture,
 });
 
