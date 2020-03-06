@@ -12,7 +12,7 @@ animals.route({
       200: {
         body: animalSchema
       }
-  }
+  },
   },
   handler: ctrl.listAnimals,
 });

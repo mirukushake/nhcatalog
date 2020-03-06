@@ -1,9 +1,5 @@
 const Animal = require('../models/animal');
 
-// function getLocale (header) {
-//   return header.split(',');
-// }
-
 async function listAnimals (ctx) {
   const language = ctx.query.locale || 1;
   const subtitle = ctx.query.subtitle;
@@ -22,16 +18,10 @@ async function listAnimals (ctx) {
 
   if (animals.length > 0) {
     ctx.status = 200;
-    ctx.body = {
-      status: 'success',
-      data: animals,
-    };
+    ctx.body = { data: animals };
   } else {
     ctx.status = 404;
-    ctx.body = {
-      status: 'error',
-      message: 'Could not find any animals.',
-    };
+    ctx.body = 'Could not find any animals.';
   }
 }
 

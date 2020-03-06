@@ -28,10 +28,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(publicRoutes.middleware());
-
-// error handling
-
 const handler = async (ctx, next) => {
   try {
     await next();
@@ -42,6 +38,8 @@ const handler = async (ctx, next) => {
 };
 
 app.use(handler);
+
+app.use(publicRoutes.middleware());
 
 // app.on('error', function(err) {
 //   console.log('logging error ', err.message);

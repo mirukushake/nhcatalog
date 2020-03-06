@@ -14,18 +14,16 @@ async function listMuseum (ctx) {
         .select('id');
     })
     // .modify('setLocale', 'animal_names', 'animal_id', 'creatures', language, subtitle)
-    .select('id', 'item_id');
+    .select('id');
 
   if (creatures.length > 0) {
     ctx.status = 200;
     ctx.body = {
-      status: 'success',
       data: creatures,
     };
   } else {
     ctx.status = 404;
     ctx.body = {
-      status: 'error',
       message: 'Could not find any creatures.',
     };
   }
