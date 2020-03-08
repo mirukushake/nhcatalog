@@ -43,7 +43,7 @@
               @click="changeLocale(locale.code)"
             >
               <v-list-item-content>
-                <v-list-item-title v-text="locale.name" />
+                <v-list-item-title class="text-uppercase" v-text="locale.code" />
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
@@ -68,7 +68,7 @@
     >
       <v-list nav dense expand>
         <v-list-group
-          v-for="navitem in nav.filter(x => x.subitems)"
+          v-for="navitem in nav"
           :key="navitem.tile"
           :prepend-icon="navitem.icon"
           no-action
@@ -78,43 +78,21 @@
               <v-list-item-title v-text="navitem.title" />
             </v-list-item-content>
           </template>
-
           <v-list-item
             v-for="subitem in navitem.subitems"
             :key="subitem.title"
             :to="subitem.to"
+            nuxt
           >
             <v-list-item-content>
               <v-list-item-title v-text="subitem.title" />
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
-        <v-list-item
-          v-for="navitem in nav.filter(x => !x.subitems)"
-          :key="navitem.tile"
-          :to="navitem.to"
-        >
-          <v-list-item-icon>
-            <v-icon v-text="navitem.icon" />
-          </v-list-item-icon>
-
-          <v-list-item-title v-text="navitem.title" />
-        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-content>
       <v-container>
-        <!-- <div>
-          <v-text-field
-            prepend-inner-icon="mdi-magnify"
-            label="Search for an item"
-            single-line
-            filled
-            rounded
-            class="mt-6 hidden-md-and-up"
-            dense
-          />
-        </div> -->
         <nuxt />
       </v-container>
     </v-content>
@@ -128,6 +106,14 @@ export default {
       drawer: null,
       currentLocale: null,
       nav: [
+        {
+          icon: 'mdi-information-outline',
+          title: 'Information',
+          subitems: [
+            { title: 'Characters', to: '/characters' },
+            { title: 'Recipes' },
+          ],
+        },
         {
           icon: 'mdi-tshirt-crew',
           title: 'Clothing',
@@ -175,11 +161,6 @@ export default {
           ],
         },
         {
-          icon: 'mdi-format-list-bulleted',
-          title: 'Sets',
-          to: '/sets',
-        },
-        {
           icon: 'mdi-flower',
           title: 'Nature',
           subitems: [
@@ -189,11 +170,18 @@ export default {
           ],
         },
       ],
+      infoNav: [
+        {
+          icon: 'mdi-paw',
+          title: 'Characters',
+          to: '/characters',
+        },
+      ],
     }
   ),
   computed: {
     availableLocales () {
-      return this.$i18n.locales
+      return this.$i18n.locales;
     },
   },
   mounted () {
@@ -207,6 +195,7 @@ export default {
     async changeLocale (locale) {
       await this.$i18n.setLocale(locale);
       this.getLocale();
+      this.$router.go({ path: this.$router.currentRoute.path, force: true });
     },
   },
 };

@@ -1,3 +1,4 @@
+require('dotenv').config();
 
 export default {
   mode: 'universal',
@@ -10,11 +11,11 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+    ],
   },
   /*
   ** Customize the progress-bar color
@@ -29,6 +30,8 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~plugins/day.js',
+    '~plugins/axios.js',
   ],
   /*
   ** Nuxt.js dev-modules
@@ -45,25 +48,25 @@ export default {
     // Doc: https://buefy.github.io/#/documentation
     [
       'nuxt-i18n',
-       {
-         locales: [
-           {
-             code: 'en',
-             file: 'en.json',
-             name: 'EN',
-           },
-           {
+      {
+        locales: [
+          {
+            code: 'en',
+            file: 'en.json',
+            id: 1,
+          },
+          {
             code: 'ja',
             file: 'ja.json',
-            name: 'JA',
-          }
-         ],
-         defaultLocale: 'en',
-         vueI18n: {
-          fallbackLocale: 'en'
+            id: 2,
+          },
+        ],
+        defaultLocale: 'en',
+        vueI18n: {
+          fallbackLocale: 'en',
         },
-         strategy: 'no_prefix',
-         detectBrowserLanguage: {
+        strategy: 'no_prefix',
+        detectBrowserLanguage: {
           // If enabled, a cookie is set once a user has been redirected to his
           // preferred language to prevent subsequent redirections
           // Set to false to redirect every time
@@ -73,24 +76,30 @@ export default {
           // Set to always redirect to value stored in the cookie, not just once
           alwaysRedirect: false,
           // If no locale for the browsers locale is a match, use this one as a fallback
-          fallbackLocale: null
+          fallbackLocale: null,
         },
-         lazy: true,
-         langDir: 'lang/',
+        lazy: true,
+        langDir: 'lang/',
 
-        }
+      },
     ],
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/proxy',
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
   ],
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    baseURL: process.env.API_URL,
+  },
+
+  proxy: {
+    '/api/': { target: 'http://localhost:8081', pathRewrite: { '^/api/': '' } },
   },
 
   vuetify: {
@@ -119,6 +128,6 @@ export default {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
-    }
-  }
-}
+    },
+  },
+};

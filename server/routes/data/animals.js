@@ -7,13 +7,13 @@ const animals = router();
 animals.route({
   method: 'get',
   path: '/animals',
-  validate: {
-    output: {
-      200: {
-        body: animalSchema
-      }
-  },
-  },
+  // validate: {
+  //   output: {
+  //     200: {
+  //       body: animalSchema
+  //     }
+  // },
+  // },
   handler: ctrl.listAnimals,
 });
 

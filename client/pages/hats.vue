@@ -41,8 +41,8 @@
 <script>
 export default {
   name: 'Hats',
-  selected: [],
   data: () => ({
+    data: null,
     itemdata: [
       {
         itemname: 'purple-pumpkin head',
