@@ -44,6 +44,7 @@ async function listSPCharacters (ctx) {
   const lang = await Language.query().where('code', '=', ctx.query.locale).select('id');
   const subtitle = ctx.query.subtitle;
   const sort = ctx.query['sortBy[]'];
+  const order = ctx.query['sortDesc[]'];
   const page = (ctx.query.page - 1) || 0;
   const size = ctx.query.size || 20;
   const search = ctx.query.search;
@@ -57,6 +58,10 @@ async function listSPCharacters (ctx) {
     .modify(function (qb) {
       if (search) {
         qb.where('name', 'ilike', `%${search}%`);
+      }
+      if (sort && order) {
+        const orderString = (order === 'false') ? 'asc' : 'desc';
+        qb.orderBy(sort, orderString);
       }
     })
     .select('id', 'identifier', 'birthday')
