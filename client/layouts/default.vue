@@ -108,73 +108,65 @@ export default {
       nav: [
         {
           icon: 'mdi-information-outline',
-          title: 'Information',
+          title: this.$i18n.t('menu.information'),
           subitems: [
-            { title: 'Characters', to: '/characters' },
-            { title: 'Recipes' },
+            { title: 'Villagers', to: '/villagers' },
+            { title: 'Special Characters', to: '/special-characters' },
+            { title: 'Recipes',  },
           ],
         },
         {
           icon: 'mdi-tshirt-crew',
           title: 'Clothing',
           subitems: [
-            { title: 'Hats', to: '/hats' },
-            { title: 'Accessories' },
-            { title: 'Tops' },
-            { title: 'Bottoms' },
-            { title: 'Dresses' },
-            { title: 'Socks' },
-            { title: 'Shoes' },
-            { title: 'Umbrellas' },
-            { title: 'Wetsuits' },
+            { title: 'Tops', to: '/tops' },
+            { title: 'Bottoms', to: '/bottoms' },
+            { title: 'Dresses', to: '/dresses' },
+            { title: 'Headwear', to: '/headwear' },
+            { title: 'Accessories', to: '/accessories' },
+            { title: 'Socks', to: '/socks' },
+            { title: 'Shoes', to: '/shoes' },
           ],
         },
         {
           icon: 'mdi-lamp',
           title: 'Furniture',
           subitems: [
-            { title: 'Furniture' },
-            { title: 'Wallpaper' },
-            { title: 'Flooring' },
+            { title: 'Furniture', to: '/furniture' }, // change to subcategories later
+            { title: 'Wallpaper', to: '/wallpaper' },
+            { title: 'Flooring', to: '/flooring' },
           ],
         },
         {
           icon: 'mdi-bank',
           title: 'Museum',
           subitems: [
-            { title: 'Bugs' },
-            { title: 'Fish' },
-            { title: 'Fossils' },
-            { title: 'Art' },
+            { title: 'Bugs', to: '/bugs' },
+            { title: 'Fish', to: '/fish' },
+            { title: 'Fossils', to: '/fossils' },
           ],
         },
         {
           icon: 'mdi-image',
           title: 'Collectibles',
           subitems: [
-            { title: 'Music' },
-            { title: 'Stationery' },
-            { title: 'Villager Pics' },
-            { title: 'Gyroids' },
-            { title: 'Handhelds' },
-            { title: 'Tools' },
+            { title: 'Tools', to: '/tools' },
+            { title: 'Handhelds', to: '/handhelds' },
+            { title: 'Villager Pics', to: '/pics' },
+            { title: 'Music', to: '/music' }, // may move to furniture
+            { title: 'Stationery', to: '/stationery' },
+            { title: 'Gyroids', to: '/gyroids' },
           ],
         },
         {
           icon: 'mdi-flower',
           title: 'Nature',
           subitems: [
-            { title: 'Flowers' },
-            { title: 'Plants' },
-            { title: 'Fruit' },
+            { title: 'Flowers', to: '/flowers' },
+            { title: 'Plants', to: '/plants' },
+            { title: 'Fruit', to: '/fruit' },
+            // buried creatures?
           ],
-        },
-      ],
-      infoNav: [
-        {
-          icon: 'mdi-paw',
-          title: 'Characters',
-          to: '/characters',
         },
       ],
     }

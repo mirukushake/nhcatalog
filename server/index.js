@@ -7,7 +7,7 @@ const cors = require('@koa/cors');
 
 // knex config
 const Knex = require('knex');
-const { Model } = require('objection');
+const { Model, snakeCaseMappers } = require('objection');
 const knexConfig = require('./knexfile');
 
 const knex = Knex(knexConfig.development);
