@@ -105,14 +105,21 @@ export default {
     {
       drawer: null,
       currentLocale: null,
-      nav: [
+    }
+  ),
+  computed: {
+    availableLocales () {
+      return this.$i18n.locales;
+    },
+    nav () {
+      return [
         {
           icon: 'mdi-information-outline',
-          title: this.$i18n.t('menu.information'),
+          title: this.$t('menu.information'),
           subitems: [
             { title: 'Villagers', to: '/villagers' },
             { title: 'Special Characters', to: '/special-characters' },
-            { title: 'Recipes',  },
+            { title: 'Recipes', to: '/recipes' },
           ],
         },
         {
@@ -168,12 +175,7 @@ export default {
             // buried creatures?
           ],
         },
-      ],
-    }
-  ),
-  computed: {
-    availableLocales () {
-      return this.$i18n.locales;
+      ];
     },
   },
   mounted () {

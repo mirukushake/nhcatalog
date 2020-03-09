@@ -2,7 +2,7 @@
   <div class="container">
     <div>
       <h1 class="display-1 info--text">
-        Characters
+        Special Characters
       </h1>
     </div>
     <div class="search mb-10" />
@@ -44,7 +44,7 @@
             {{ $dayjs(item.birthday).format('MM/DD') }}
           </div>
           <div v-else>
-            {{ $t('unknown') }}
+            {{ $t('common.unknown') }}
           </div>
         </template>
       </v-data-table>
@@ -54,7 +54,7 @@
 
 <script>
 export default {
-  name: 'Special Characters',
+  name: 'SpecialCharacters',
   data: () => ({
     search: '',
     loading: true,
