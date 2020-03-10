@@ -8,6 +8,7 @@ animals.route({
   method: 'get',
   path: '/villagers',
   validate: {
+    continueOnError: true,
     output: {
       200: {
         body: schema.villagerSchema
@@ -21,6 +22,7 @@ animals.route({
   method: 'get',
   path: '/special-characters',
   validate: {
+    continueOnError: true,
     output: {
       200: {
         body: schema.SPSchema

@@ -6,8 +6,20 @@ const museum = router();
 
 museum.route({
   method: 'get',
-  path: '/museum',
-  handler: ctrl.listMuseum,
+  path: '/creatures',
+  validate: {
+    continueOnError: true
+  },
+  handler: ctrl.listCreatures,
 });
+
+// museum.route({
+//   method: 'get',
+//   path: '/fossils',
+//   validate: {
+//     continueOnError: true
+//   },
+//   handler: ctrl.listMuseum,
+// });
 
 module.exports = museum;

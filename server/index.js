@@ -26,25 +26,20 @@ const corsOptions = {
   origin: '*',
 };
 
-app.use(cors(corsOptions));
-
-const handler = async (ctx, next) => {
+app.use(async (ctx, next) => {
   try {
     await next();
   } catch (err) {
-    ctx.response.status = err.statusCode || err.status || 500;
+    err.expose = true;
+    err.status = err.statusCode || err.status || 500;
+    ctx.body = { status: err.status, message: err.message };
     ctx.app.emit('error', err, ctx);
   }
-};
+});
 
-app.use(handler);
+app.use(cors(corsOptions));
 
 app.use(publicRoutes.middleware());
-
-// app.on('error', function(err) {
-//   console.log('logging error ', err.message);
-//   console.log(err);
-// });
 
 app.use(logger({ transports: transport }));
 

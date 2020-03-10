@@ -4,7 +4,7 @@ const Creature = require('../models/creature');
 //   return header.split(',');
 // }
 
-async function listMuseum (ctx) {
+async function listCreatures (ctx) {
   const language = ctx.query.locale || 1;
   const subtitle = ctx.query.subtitle;
   const creatures = await Creature.query()
@@ -29,4 +29,4 @@ async function listMuseum (ctx) {
   }
 }
 
-module.exports = { listMuseum };
+module.exports = { listCreatures };

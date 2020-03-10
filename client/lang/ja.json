@@ -1,4 +1,46 @@
 {
-  "welcome": "NH Catalogへようこそ",
-  "unknown": "不明"
+  "menu": {
+    "information": "情報",
+    "villagers": "住民",
+    "special_characters": "SPキャラクター",
+    "recipes": "DIYレシピ",
+    "shops": "設備",
+    "clothing": "服",
+    "tops": "トップス",
+    "bottoms": "ボトムス",
+    "dresses": "ドレス",
+    "headwear": "かぶりもの",
+    "accessories": "アクセサリー",
+    "socks": "靴下",
+    "shoes": "靴",
+    "furniture": "家具",
+    "wallpaper": "壁紙",
+    "flooring": "床",
+    "musuem": "博物館",
+    "bugs": "虫",
+    "fish": "魚",
+    "fossils": "化石",
+    "collectibles": "収集品",
+    "music": "音楽",
+    "stationery": "びんせん",
+    "pics": "しゃしん",
+    "gyroids": "ハニワ",
+    "handhelds": "手持ち品",
+    "tools": "道具",
+    "nature": "自然",
+    "flowers": "お花",
+    "plants": "樹木",
+    "fruit": "果物"
+  },
+  "meta": {
+    "login": "ログイン",
+    "register": "新規登録",
+    "logout": "ログアウト"
+  },
+  "common": {
+    "unknown": "不明"
+  },
+  "messages": {
+
+  }
 }
