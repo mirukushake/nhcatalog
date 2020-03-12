@@ -2,10 +2,10 @@
   <div class="container">
     <div>
       <h1 class="display-1 info--text">
-        {{ $t('welcome') }}
+        {{ $t('messages.welcome') }}
       </h1>
       <h1 class="title grey--text text--darken-2">
-        {{ $t('welcome_subtitle') }}
+        {{ $t('messages.welcome_subtitle') }}
       </h1>
     </div>
   </div>

@@ -119,6 +119,7 @@ export default {
           subitems: [
             { title: this.$t('menu.villagers'), to: '/villagers' },
             { title: this.$t('menu.special_characters'), to: '/special-characters' },
+            { title: this.$t('menu.shops'), to: '/shops' },
             { title: this.$t('menu.recipes'), to: '/recipes' },
           ],
         },

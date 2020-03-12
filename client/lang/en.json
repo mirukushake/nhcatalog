@@ -42,6 +42,9 @@
   },
   "messages": {
     "welcome": "Welcome to NH Catalog",
-    "welcome_subtitle": "An Animal Crossing: New Horizons catalog"
+    "welcome_subtitle": "An Animal Crossing: New Horizons catalog",
+    "404": "Page not found",
+    "500": "An error occured",
+    "return_to_top": "Back to top"
   }
 }

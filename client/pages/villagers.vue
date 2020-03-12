@@ -76,8 +76,8 @@ export default {
       this.loading = false;
     },
   },
-  head: () => ({
-    title: this.$t('menu.villagers'),
-  }),
+  head () {
+    return { title: this.$t('menu.villagers') };
+  },
 };
 </script>

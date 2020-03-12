@@ -42,6 +42,9 @@
   },
   "messages": {
     "welcome": "Welcome to NH Catalog",
-    "welcome_subtitle": "An Animal Crossing: New Horizons catalog"
+    "welcome_subtitle": "An Animal Crossing: New Horizons catalog",
+    "404": "",
+    "500": "",
+    "return_to_top": ""
   }
 }

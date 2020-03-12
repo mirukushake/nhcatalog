@@ -74,8 +74,8 @@ export default {
       this.loading = false;
     },
   },
-  head: () => ({
-    title: this.$t('menu.special_characters'),
-  }),
+  head () {
+    return { title: this.$t('menu.special_characters') };
+  },
 };
 </script>

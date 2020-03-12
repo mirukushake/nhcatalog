@@ -4,7 +4,7 @@
     "villagers": "住民",
     "special_characters": "SPキャラクター",
     "recipes": "DIYレシピ",
-    "shops": "設備",
+    "shops": "お店",
     "clothing": "服",
     "tops": "トップス",
     "bottoms": "ボトムス",
@@ -41,6 +41,8 @@
     "unknown": "不明"
   },
   "messages": {
-
+    "404": "リクエストされたURLは存在しません",
+    "500": "エラーが発生しました",
+    "return_to_top": "トップページへ戻る"
   }
 }
