@@ -1,6 +1,7 @@
 const router = require('koa-joi-router');
 const schema = require('../../schemas/animals');
 const ctrl = require('../../controllers/animals');
+const { getParams } = require('../../middleware/getParams');
 
 const animals = router();
 
@@ -15,7 +16,7 @@ animals.route({
       }
   },
   },
-  handler: ctrl.listVillagers,
+  handler: [ getParams, ctrl.listVillagers ],
 });
 
 animals.route({
@@ -29,7 +30,7 @@ animals.route({
       }
   },
   },
-  handler: ctrl.listSPCharacters,
+  handler:  [ getParams, ctrl.listSPCharacters ],
 });
 
 module.exports = animals;

@@ -1,22 +1,17 @@
 const Creature = require('../models/creature');
 
-// function getLocale (header) {
-//   return header.split(',');
-// }
-
 async function listCreatures (ctx) {
-  const language = ctx.query.locale || 1;
-  const subtitle = ctx.query.subtitle;
-  const creatures = await Creature.query()
-    .withGraphFetched('[creature, season]')
-    .modifyGraph('creature', (builder) => {
-      builder.modify('setLocale', 'item_names', 'item_id', 'items', language, subtitle)
-        .select('id');
-    })
-    // .modify('setLocale', 'animal_names', 'animal_id', 'creatures', language, subtitle)
-    .select('id');
+  const { language, subtitle, sort, order, page, size, search } = ctx.state;
 
-  if (creatures.length > 0) {
+  const creatures = await Creature.query()
+    .skipUndefined()
+    .joinRelated('creature')
+    .join('item_names', 'item_names.item_id', 'creature.id').where('item_names.lang_id', language)
+    .select('creatures.id', 'creatures.item_id as item_id', 'item_names.name as name')
+    .select('identifier', 'section', 'order', 'cat_id')
+    .withGraphFetched('season');
+
+  if (creatures) {
     ctx.status = 200;
     ctx.body = {
       data: creatures,
@@ -27,6 +22,10 @@ async function listCreatures (ctx) {
       message: 'Could not find any creatures.',
     };
   }
+}
+
+async function listFossils(ctx) {
+  //
 }
 
 module.exports = { listCreatures };

@@ -1,6 +1,7 @@
 const router = require('koa-joi-router');
 // const Joi = router.Joi;
-// const ctrl = require('../../controllers/categories');
+const ctrl = require('../../controllers/clothing');
+const { getParams } = require('../../middleware/getParams');
 
 const clothing = router();
 
@@ -8,15 +9,15 @@ const clothing = router();
 clothing.route({
   method: 'get',
   path: '/clothing',
-  handler: ctrl.listCategories,
+  handler: [ getParams, ctrl.listClothing ],
 });
 
 // list of clothing by category
 
 clothing.route({
   method: 'get',
-  path: '/clothing/:id'
-  handler: null,
+  path: '/clothing/:id',
+  handler: [ getParams, ctrl.singleListClothing ],
 })
 
 module.exports = clothing;

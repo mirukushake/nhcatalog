@@ -2,7 +2,7 @@
   <div class="container">
     <div>
       <h1 class="display-1 info--text">
-        Special Characters
+        {{ $t('menu.special_characters') }}
       </h1>
     </div>
     <div class="search mb-10" />
@@ -10,8 +10,6 @@
       <v-data-table
         :headers="headers"
         :items="characters"
-        :options.sync="options"
-        :server-items-length="total"
         :loading="loading"
         :footer-props="{
           'items-per-page-options': [20, 50, 100]
@@ -59,44 +57,25 @@ export default {
     search: '',
     loading: true,
     characters: [],
-    total: 0,
-    options: { page: 1, itemsPerPage: 20 },
-    pagination: { },
     headers: [
       { text: '', value: 'image', sortable: false },
       { text: 'Name', value: 'name' },
       { text: 'Birthday', value: 'birthday' },
     ],
   }),
-  watch: {
-    options: {
-      handler () {
-        this.getData();
-      },
-      deep: true,
-    },
-    search: {
-      handler () {
-        this.getData();
-      },
-      deep: true,
-    },
-  },
   mounted () {
     this.getData();
   },
   methods: {
     async getData () {
       this.loading = true;
-      const params = Object.assign(this.options, { search: this.search });
-      const { data } = await this.$axios.get('/special-characters', { params });
-      this.characters = data.data.results;
-      this.total = data.data.total;
+      const { data } = await this.$axios.get('/special-characters');
+      this.characters = data.data;
       this.loading = false;
     },
   },
   head: () => ({
-    title: 'Special Characters',
+    title: this.$t('menu.special_characters'),
   }),
 };
 </script>

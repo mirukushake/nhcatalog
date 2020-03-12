@@ -13,7 +13,17 @@ class BaseModel extends Model {
           .select('name.name as name')
           .modify(function (qb) {
             if (subtitle) {
-              qb.join(`${jointable} as subtitle`, `subtitle.${joincol}`, `${origin}.id`).where('subtitle.lang_id', subtitle).select('subtitle.name as subtitle');
+              qb.leftJoin(`${jointable} as subtitle`, `subtitle.${joincol}`, `${origin}.id`).where('subtitle.lang_id', subtitle).select('subtitle.name as subtitle');
+            }
+          });
+      },
+      joinLocale (builder, jointable, joincol, language, subtitle) {
+        builder.skipUndefined().join(`${jointable} as name`, joincol, 'name.item_id')
+          .where('name.lang_id', language)
+          .select('name.name as name')
+          .modify(function (qb) {
+            if (subtitle) {
+              qb.leftJoin(`${jointable} as subtitle`, `${joincol}`, 'subtitle.item_id').where('subtitle.lang_id', subtitle).select('subtitle.name as subtitle');
             }
           });
       },

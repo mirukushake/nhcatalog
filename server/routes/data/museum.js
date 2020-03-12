@@ -1,16 +1,23 @@
 const router = require('koa-joi-router');
 // const Joi = router.Joi;
+const schema = require('../../schemas/museum');
 const ctrl = require('../../controllers/museum');
+const { getParams } = require('../../middleware/getParams');
 
 const museum = router();
 
 museum.route({
   method: 'get',
-  path: '/creatures',
+  path: '/museum/creatures',
   validate: {
-    continueOnError: true
+    continueOnError: true,
+    output: {
+      200: {
+        body: schema.creatureSchema
+      }
   },
-  handler: ctrl.listCreatures,
+  },
+  handler: [ getParams, ctrl.listCreatures ],
 });
 
 // museum.route({
