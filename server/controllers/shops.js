@@ -6,7 +6,7 @@ async function listShops (ctx) {
   const { language, subtitle, sort, order, page, size, search } = ctx.state;
 
   const shops = await Shop.query()
-    .modify('setLocale', 'shop_names', 'shop_id', 'shops', language, subtitle)
+    .modify('setLocale', 'shop_names', 'shop_id', 'shops.id', language, subtitle)
     .select('id', 'identifier', 'is_unlock', 'unlock_method');
 
   if (shops) {
@@ -29,25 +29,21 @@ async function singleShop (ctx) {
 
    const shop = await Shop.query()
     .findById(shopId)
-    .modify('setLocale', 'shop_names', 'shop_id', 'shops', language, subtitle)
-    .select('id', 'identifier', 'is_unlock', 'unlock_method')
-    .withGraphFetched('items(locale, currencyName, selection, catName)')
+    .modify('setLocale', 'shop_names', 'shop_id', 'shops.id', language, subtitle)
+    .select('id', 'identifier')
+    .withGraphFetched('items(locale, currency, selection, category)')
     .modifiers({
       locale(builder) {
-        builder.modify('joinLocale', 'item_names', 'shop_items.item_id', language, subtitle);
+        builder.modify('setLocale', 'item_names', 'shop_items.item_id', 'name.item_id', language, subtitle);
       },
       selection(builder) {
-        builder.select('shop_items.currency_id', 'identifier', 'price', 'sell_price', 'items.cat_id');
+        builder.select('items.id', 'identifier', 'price', 'sell_price', 'items.cat_id');
       },
-      catName(builder) {
-        builder.skipUndefined().join('category_names as catname', 'items.cat_id', 'catname.cat_id')
-          .where('catname.lang_id', language)
-          .select('catname.name as cat_name')
+      category(builder) {
+        builder.modify('catName', 'items', language);
       },
-      currencyName(builder) {
-        builder.skipUndefined().join('currency_names as currencyname', 'shop_items.currency_id', 'currencyname.currency_id')
-          .where('currencyname.lang_id', language)
-          .select('currencyname.plural as currency_name')
+      currency(builder) {
+        builder.modify('currencyName', 'shop_items', language);
       },
     });
 

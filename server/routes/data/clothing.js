@@ -1,5 +1,5 @@
 const router = require('koa-joi-router');
-// const Joi = router.Joi;
+const Joi = router.Joi;
 const ctrl = require('../../controllers/clothing');
 const { getParams } = require('../../middleware/getParams');
 
@@ -17,6 +17,10 @@ clothing.route({
 clothing.route({
   method: 'get',
   path: '/clothing/:id',
+  validate: {
+    continueOnError: true,
+    params: Joi.number().integer(),
+  },
   handler: [ getParams, ctrl.singleListClothing ],
 })
 

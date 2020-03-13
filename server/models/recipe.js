@@ -17,6 +17,14 @@ class Recipe extends BaseModel {
           to: 'items.id',
         },
       },
+      recipe: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: Item,
+        join: {
+          from: 'recipes.recipe_id',
+          to: 'items.id',
+        },
+      },
       materials: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: Item,

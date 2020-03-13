@@ -6,12 +6,16 @@ async function listRecipes (ctx) {
   const { language, subtitle } = ctx.state;
 
   const recipes = await Recipe.query()
-    .joinRelated('product(locale)')
-    .select('recipes.id', 'recipe_id', 'final_item_id', 'name', 'subtitle')
+    .select('recipes.id', 'recipe_id', 'final_item_id')
+    .modify('joinLocale', 'item_names', 'final_item_id', language, subtitle)
     .withGraphFetched('materials(locale, info)')
     .modifiers({
-      locale: query => query.modify('joinLocale', 'item_names', 'items.id', language, subtitle),
-      info: query => query.select('mat_id', 'qty', 'order')
+      locale (builder) {
+        builder.modify('setLocale', 'item_names', 'items.id', 'name.item_id', language, subtitle)
+      },
+      info (builder) {
+        builder.select('mat_id', 'qty', 'order')
+      },
      });
 
   if (recipes) {

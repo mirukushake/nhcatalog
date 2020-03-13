@@ -10,12 +10,12 @@ async function listCategories (ctx) {
   const language = ctx.query.locale || 1;
   const subtitle = ctx.query.subtitle;
   const categories = await Category.query().where('parent', null)
-    .modify('setLocale', 'category_names', 'cat_id', 'categories', language, subtitle)
+    .modify('setLocale', 'category_names', 'cat_id', 'categories.id', language, subtitle)
     .select('id', 'identifier', 'order')
     .orderBy('order', 'name', 'id', 'identifier', 'subtitle')
     .withGraphFetched('children')
     .modifyGraph('children', (builder) => {
-      builder.modify('setLocale', 'category_names', 'cat_id', 'categories', language, subtitle)
+      builder.modify('setLocale', 'category_names', 'cat_id', 'categories.id', language, subtitle)
         .select('id', 'identifier', 'order')
         .orderBy('order', 'name', 'id', 'identifier', 'subtitle');
     });
