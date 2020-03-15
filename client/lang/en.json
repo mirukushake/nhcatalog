@@ -30,7 +30,8 @@
     "nature": "Nature",
     "flowers": "Flowers",
     "plants": "Plants",
-    "fruit": "Fruit"
+    "fruit": "Fruit",
+    "materials": "Crafting Materials"
   },
   "meta": {
     "login": "Log in",
@@ -38,7 +39,8 @@
     "logout": "Log out"
   },
   "common": {
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "everything": "Everything"
   },
   "messages": {
     "welcome": "Welcome to NH Catalog",

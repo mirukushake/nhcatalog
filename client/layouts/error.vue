@@ -1,3 +1,4 @@
+/* eslint-disable vue/require-prop-types */
 <template>
   <div class="container">
     <section>
@@ -16,7 +17,12 @@
 
 <script>
 export default {
-  props: ['error'],
+  props: {
+    error: {
+      type: Object,
+      default: Function,
+    },
+  },
   layout: 'blog', // you can set a custom layout for the error page
   head () {
     return { title: 'Oh no! An error!' };

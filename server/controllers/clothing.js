@@ -1,5 +1,5 @@
-const Item = require('../models/item')
-const Category = require('../models/category')
+const Item = require('../models/item');
+const Category = require('../models/category');
 
 // list all clothing
 async function listClothing (ctx) {
@@ -12,31 +12,36 @@ async function listClothing (ctx) {
     .join('category_names', 'category_names.cat_id', 'category.id').where('category_names.lang_id', language)
     .select('items.cat_id', 'category_names.name as cat_name', 'category.identifier as cat_identifier', 'size', 'sell_price')
     .where('category.parent', 35).orWhere('category.id', 35)
-    .withGraphFetched('[shop(locale, currency, selection), recipes.materials(matLocale, info), used_in(usedLocale, usedInfo)]')
+    .withGraphFetched('[shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
-      locale(builder) {
+      locale (builder) {
         builder.modify('nameOnly', 'shop_names', 'name.shop_id', 'shops.id', language);
       },
-      matLocale(builder) {
+      matLocale (builder) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'items.id', language);
       },
-      usedLocale(builder) {
+      recipeLocale (builder) {
+        builder.modify('nameOnly', 'item_names', 'name.item_id', 'recipes.recipe_id', language);
+      },
+      usedLocale (builder) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'recipes.final_item_id', language);
       },
-      selection(builder) {
+      selection (builder) {
         builder.select('price', 'identifier');
       },
       info (builder) {
         builder.select('mat_id', 'qty', 'order');
       },
+      recipeInfo (builder) {
+        builder.select('recipe_id', 'final_item_id');
+      },
       usedInfo (builder) {
         builder.select('recipe_items.recipe_id', 'qty');
       },
-      currency(builder) {
+      currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
     });
-
 
   if (clothing) {
     ctx.status = 200;
@@ -58,7 +63,7 @@ async function singleListClothing (ctx) {
 
   // make sure id is for clothing categories
   const idCheck = await Category.query().where('parent', 35).orWhere('id', 35).select('id');
-  const idArray = idCheck.map(i => i.id)
+  const idArray = idCheck.map(i => i.id);
 
   const clothing = await Item.query()
     .select('items.id', 'items.identifier')
@@ -69,16 +74,16 @@ async function singleListClothing (ctx) {
     .whereIn('category.id', idArray).andWhere('category.id', cat)
     .withGraphFetched('[shop(locale, currency, selection), recipes.materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
-      locale(builder) {
+      locale (builder) {
         builder.modify('nameOnly', 'shop_names', 'name.shop_id', 'shops.id', language);
       },
-      matLocale(builder) {
+      matLocale (builder) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'items.id', language);
       },
-      usedLocale(builder) {
+      usedLocale (builder) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'recipes.final_item_id', language);
       },
-      selection(builder) {
+      selection (builder) {
         builder.select('price', 'identifier');
       },
       info (builder) {
@@ -87,7 +92,7 @@ async function singleListClothing (ctx) {
       usedInfo (builder) {
         builder.select('recipe_items.recipe_id', 'qty');
       },
-      currency(builder) {
+      currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
     });
@@ -97,14 +102,12 @@ async function singleListClothing (ctx) {
     ctx.body = {
       data: clothing,
     };
-  }
-  else {
+  } else {
     ctx.status = 404;
     ctx.body = {
       message: 'Could not find any clothing, or this is not a clothing category.',
     };
   }
 }
-
 
 module.exports = { listClothing, singleListClothing };

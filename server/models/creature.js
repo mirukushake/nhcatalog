@@ -20,7 +20,7 @@ class Creature extends BaseModel {
       },
 
       season: {
-        relation: BaseModel.BelongsToOneRelation,
+        relation: BaseModel.HasManyRelation,
         modelClass: CreatureSeasonality,
         join: {
           from: 'creatures.id',

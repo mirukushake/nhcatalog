@@ -37,8 +37,8 @@ class Item extends BaseModel {
         modelClass: Recipe,
         join: {
           from: 'items.id',
-          to: 'recipes.final_item_id'
-          }
+          to: 'recipes.final_item_id',
+        },
       },
       used_in: {
         relation: BaseModel.ManyToManyRelation,

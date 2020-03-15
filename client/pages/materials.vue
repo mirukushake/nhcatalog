@@ -1,15 +1,15 @@
 <template>
-  <div class="container">
+  <div v-if="pageInfo" class="container">
     <div>
       <h1 class="display-1 info--text">
-        {{ $t('menu.villagers') }}
+        {{ pageInfo.title }}
       </h1>
     </div>
 
     <section>
       <v-data-table
         :headers="headers"
-        :items="characters"
+        :items="materials"
         :loading="loading"
         :search="search"
         :footer-props="{
@@ -20,10 +20,11 @@
           <v-toolbar flat color="white">
             <v-text-field
               v-model="search"
-              append-icon="mdi-magnify"
+              prepend-icon="mdi-magnify"
               label="Search"
               single-line
               hide-details
+              clearable
             />
           </v-toolbar>
         </template>
@@ -32,19 +33,8 @@
             <v-icon>{{ item.image }}</v-icon>
           </v-avatar>
         </template>
-        <template v-slot:item.name="{ item }">
-          <div>{{ item.name }}</div>
-          <div v-if="item.subtitle" class="grey--text">
-            {{ item.subtitle }}
-          </div>
-        </template>
-        <template v-slot:item.birthday="{ item }">
-          <div v-if="item.birthday">
-            {{ $dayjs(item.birthday).format('MM/DD') }}
-          </div>
-          <div v-else>
-            {{ $t('common.unknown') }}
-          </div>
+        <template v-slot:item.used_in="{ item }">
+          {{ item.used_in.map(x => x.name).join(', ') }}
         </template>
       </v-data-table>
     </section>
@@ -57,15 +47,20 @@ export default {
   data: () => ({
     search: '',
     loading: false,
-    characters: [],
+    materials: [],
     headers: [
       { text: '', value: 'image', sortable: false },
       { text: 'Name', value: 'name' },
-      { text: 'Personality', value: 'personality' },
-      { text: 'Birthday', value: 'birthday' },
-      { text: 'Species', value: 'species' },
+      { text: 'Sell Price', value: 'sell_price' },
+      { text: 'Obtained from', value: 'shop', sortable: false },
+      { text: 'Used in', value: 'used_in', sortable: false },
     ],
   }),
+  computed: {
+    pageInfo () {
+      return this.$store.getters['layout/getInfo']('materials');
+    },
+  },
   mounted () {
     this.getData();
   },
@@ -73,8 +68,8 @@ export default {
     async getData () {
       try {
         this.loading = true;
-        const { data } = await this.$axios.get('/villagers');
-        this.characters = data.data;
+        const { data } = await this.$axios.get('/materials');
+        this.materials = data.data;
         this.loading = false;
       } catch (err) {
         this.loading = false;
@@ -82,7 +77,7 @@ export default {
     },
   },
   head () {
-    return { title: this.$t('menu.villagers') };
+    return { title: this.$t('menu.materials') };
   },
 };
 </script>

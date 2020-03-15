@@ -1,5 +1,4 @@
-const Item = require('../models/item')
-const Category = require('../models/category')
+const Item = require('../models/item');
 
 // list all materials
 async function listMaterials (ctx) {
@@ -14,16 +13,19 @@ async function listMaterials (ctx) {
     .where('items.cat_id', 51)
     .withGraphFetched('[shop(locale, currency, selection), recipes.materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
-      locale(builder) {
+      locale (builder) {
         builder.modify('nameOnly', 'shop_names', 'name.shop_id', 'shops.id', language);
       },
-      matLocale(builder) {
+      matLocale (builder) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'items.id', language);
       },
-      usedLocale(builder) {
+      recipeLocale (builder) {
+        builder.modify('nameOnly', 'item_names', 'name.item_id', 'recipes.recipe_id', language);
+      },
+      usedLocale (builder) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'recipes.final_item_id', language);
       },
-      selection(builder) {
+      selection (builder) {
         builder.select('price', 'identifier');
       },
       info (builder) {
@@ -32,11 +34,10 @@ async function listMaterials (ctx) {
       usedInfo (builder) {
         builder.select('recipe_items.recipe_id', 'qty');
       },
-      currency(builder) {
+      currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
     });
-
 
   if (materials) {
     ctx.status = 200;

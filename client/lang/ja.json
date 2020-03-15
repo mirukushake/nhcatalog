@@ -30,7 +30,8 @@
     "nature": "自然",
     "flowers": "お花",
     "plants": "樹木",
-    "fruit": "果物"
+    "fruit": "果物",
+    "materials": "素材"
   },
   "meta": {
     "login": "ログイン",
@@ -38,7 +39,8 @@
     "logout": "ログアウト"
   },
   "common": {
-    "unknown": "不明"
+    "unknown": "不明",
+    "everything": "全部"
   },
   "messages": {
     "404": "リクエストされたURLは存在しません",

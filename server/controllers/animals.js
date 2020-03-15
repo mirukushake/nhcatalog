@@ -1,8 +1,7 @@
 const Animal = require('../models/animal');
 
 async function listVillagers (ctx) {
-
-  const { language, subtitle, sort, order, page, size, search } = ctx.state;
+  const { language, subtitle } = ctx.state;
 
   const animals = await Animal.query()
     .skipUndefined()
@@ -24,8 +23,7 @@ async function listVillagers (ctx) {
 }
 
 async function listSPCharacters (ctx) {
-
-  const { language, subtitle, sort, order, page, size, search } = ctx.state;
+  const { language, subtitle } = ctx.state;
 
   const animals = await Animal.query()
     .skipUndefined()

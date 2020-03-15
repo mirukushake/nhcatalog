@@ -15,13 +15,6 @@
 export default {
   name: 'HomePage',
   data: () => ({
-    items: [
-      {
-        text: 'トップ',
-        disabled: false,
-        to: 'inspire',
-      },
-    ],
   }),
   head: () => ({
     title: 'NH Catalog',

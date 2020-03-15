@@ -1,15 +1,15 @@
 <template>
-  <div class="container">
+  <div v-if="pageInfo" class="container">
     <div>
       <h1 class="display-1 info--text">
-        {{ $t('menu.villagers') }}
+        {{ pageInfo.title }}
       </h1>
     </div>
 
     <section>
       <v-data-table
         :headers="headers"
-        :items="characters"
+        :items="recipes"
         :loading="loading"
         :search="search"
         :footer-props="{
@@ -20,10 +20,11 @@
           <v-toolbar flat color="white">
             <v-text-field
               v-model="search"
-              append-icon="mdi-magnify"
+              prepend-icon="mdi-magnify"
               label="Search"
               single-line
               hide-details
+              clearable
             />
           </v-toolbar>
         </template>
@@ -32,18 +33,14 @@
             <v-icon>{{ item.image }}</v-icon>
           </v-avatar>
         </template>
-        <template v-slot:item.name="{ item }">
-          <div>{{ item.name }}</div>
-          <div v-if="item.subtitle" class="grey--text">
-            {{ item.subtitle }}
-          </div>
+        <template v-slot:item.cat_name="{ item }">
+          <nuxt-link :to="{ name: item.cat_identifier, params: { catId: item.cat_id }}">
+            {{ item.cat_name }}
+          </nuxt-link>
         </template>
-        <template v-slot:item.birthday="{ item }">
-          <div v-if="item.birthday">
-            {{ $dayjs(item.birthday).format('MM/DD') }}
-          </div>
-          <div v-else>
-            {{ $t('common.unknown') }}
+        <template v-slot:item.materials="{ item }">
+          <div v-for="mat in item.materials" :key="mat.mat_id">
+            {{ mat.name }} x {{ mat.qty }}
           </div>
         </template>
       </v-data-table>
@@ -53,19 +50,25 @@
 
 <script>
 export default {
-  name: 'Villagers',
+  name: 'Recipes',
   data: () => ({
     search: '',
     loading: false,
-    characters: [],
+    recipes: [],
     headers: [
       { text: '', value: 'image', sortable: false },
       { text: 'Name', value: 'name' },
-      { text: 'Personality', value: 'personality' },
-      { text: 'Birthday', value: 'birthday' },
-      { text: 'Species', value: 'species' },
+      { text: 'Category', value: 'cat_name' },
+      { text: 'Materials', value: 'materials', sortable: false },
+      { text: 'Obtained from', value: 'obtained', sortable: false },
+      { text: 'Unlock', value: 'unlock', sortable: false },
     ],
   }),
+  computed: {
+    pageInfo () {
+      return this.$store.getters['layout/getInfo']('recipes');
+    },
+  },
   mounted () {
     this.getData();
   },
@@ -73,8 +76,8 @@ export default {
     async getData () {
       try {
         this.loading = true;
-        const { data } = await this.$axios.get('/villagers');
-        this.characters = data.data;
+        const { data } = await this.$axios.get('/recipes');
+        this.recipes = data.data;
         this.loading = false;
       } catch (err) {
         this.loading = false;
@@ -82,7 +85,7 @@ export default {
     },
   },
   head () {
-    return { title: this.$t('menu.villagers') };
+    return { title: this.$t('menu.recipes') };
   },
 };
 </script>

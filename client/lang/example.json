@@ -35,16 +35,36 @@
   "meta": {
     "login": "Log in",
     "register": "Register",
-    "logout": "Log out"
-  },
+    "logout": "Log out",
+    "item_name": "",
+    "animal_name": "",
+    "price": "",
+    "sell_price": "",
+    "obtained": "",
+    "shadow": "",
+    "size": "",
+    "used_in": "",
+    "personality": "",
+    "birthday": "",
+    "species": "",
+    "category": "",
+    "materials": "",
+    "unlock": "",
+    "variations": "",
+    "time": "",
+    "location": ""
+   },
   "common": {
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "everything": "Everything",
+    "north_hemisphere": "",
+    "south_hemisphere": ""
   },
   "messages": {
     "welcome": "Welcome to NH Catalog",
     "welcome_subtitle": "An Animal Crossing: New Horizons catalog",
-    "404": "",
-    "500": "",
-    "return_to_top": ""
+    "404": "Page not found",
+    "500": "An error occured",
+    "return_to_top": "Back to top"
   }
 }

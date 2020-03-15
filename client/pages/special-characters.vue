@@ -5,12 +5,13 @@
         {{ $t('menu.special_characters') }}
       </h1>
     </div>
-    <div class="search mb-10" />
+
     <section>
       <v-data-table
         :headers="headers"
         :items="characters"
         :loading="loading"
+        :search="search"
         :footer-props="{
           'items-per-page-options': [20, 50, 100]
         }"
@@ -55,7 +56,7 @@ export default {
   name: 'SpecialCharacters',
   data: () => ({
     search: '',
-    loading: true,
+    loading: false,
     characters: [],
     headers: [
       { text: '', value: 'image', sortable: false },
@@ -68,10 +69,14 @@ export default {
   },
   methods: {
     async getData () {
-      this.loading = true;
-      const { data } = await this.$axios.get('/special-characters');
-      this.characters = data.data;
-      this.loading = false;
+      try {
+        this.loading = true;
+        const { data } = await this.$axios.get('/special-characters');
+        this.characters = data.data;
+        this.loading = false;
+      } catch (err) {
+        this.loading = false;
+      }
     },
   },
   head () {

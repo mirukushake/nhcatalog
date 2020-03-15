@@ -22,16 +22,16 @@ class BaseModel extends Model {
           .where('catname.lang_id', language)
           .select('catname.name as cat_name');
       },
-      currencyName(builder, table, language) {
+      currencyName (builder, table, language) {
         builder.skipUndefined().join('currency_names as currencyname', `${table}.currency_id`, 'currencyname.currency_id')
           .where('currencyname.lang_id', language)
           .select('currencyname.plural as currency_name');
       },
-      nameOnly(builder, jointable, joincol, origin, language) {
+      nameOnly (builder, jointable, joincol, origin, language) {
         builder.join(`${jointable} as name`, joincol, origin)
           .where('name.lang_id', language)
           .select('name.name as name');
-      }
+      },
     };
   }
 }

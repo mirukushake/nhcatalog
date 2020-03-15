@@ -30,6 +30,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    { src: '~/plugins/vuexpersist.js', ssr: false },
     '~plugins/day.js',
     '~plugins/axios.js',
   ],
