@@ -9,7 +9,7 @@ async function listCategories (ctx) {
       .modify('setLocale', 'category_names', 'cat_id', 'categories.id', language, subtitle)
       .select('id', 'identifier', 'order');
 
-    if (categories.length > 0) {
+    if (categories) {
       ctx.status = 200;
       ctx.body = {
         data: categories,
@@ -33,7 +33,7 @@ async function listCategories (ctx) {
           .orderBy('order', 'name', 'id', 'identifier', 'subtitle');
       });
 
-    if (categories.length > 0) {
+    if (categories) {
       ctx.status = 200;
       ctx.body = {
         data: categories,

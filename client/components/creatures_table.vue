@@ -96,16 +96,7 @@ export default {
     async getData () {
       try {
         this.loading = true;
-        // if (this.subId) {
-        //   const { data } = await this.$axios.get(`/collectibles/${this.subId}`);
-        //   this.loading = false;
-        //   this.items = data.data;
-        // } else {
-        //   const { data } = await this.$axios.get('/collectibles');
-        //   this.loading = false;
-        //   this.items = data.data;
-        // }
-        const { data } = await this.$axios.get(`/creatures?hemi=${this.hemi}`);
+        const { data } = await this.$axios.get(`/creatures/${this.subId}?hemi=${this.hemi}`);
         this.loading = false;
         this.creatures = data.data;
       } catch (err) {

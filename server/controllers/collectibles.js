@@ -43,7 +43,7 @@ async function listCollectibles (ctx) {
       },
     });
 
-  if (collectibles) {
+  if (collectibles.length > 0) {
     ctx.status = 200;
     ctx.body = {
       data: collectibles,

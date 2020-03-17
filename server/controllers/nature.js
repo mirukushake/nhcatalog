@@ -1,17 +1,17 @@
 const Item = require('../models/item');
 const Category = require('../models/category');
 
-// list all clothing
-async function listClothing (ctx) {
+// list all nature items
+async function listNature (ctx) {
   const { language, subtitle } = ctx.state;
 
-  const clothing = await Item.query()
+  const nature = await Item.query()
     .select('items.id', 'items.identifier')
     .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
     .joinRelated('category')
     .join('category_names', 'category_names.cat_id', 'category.id').where('category_names.lang_id', language)
     .select('items.cat_id', 'category_names.name as cat_name', 'category.identifier as cat_identifier', 'size', 'sell_price')
-    .where('category.parent', 35).orWhere('category.id', 35)
+    .where('category.parent', 25).orWhere('category.id', 25)
     .withGraphFetched('[shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
       locale (builder) {
@@ -43,29 +43,29 @@ async function listClothing (ctx) {
       },
     });
 
-  if (clothing) {
+  if (nature.length > 0) {
     ctx.status = 200;
     ctx.body = {
-      data: clothing,
+      data: nature,
     };
   } else {
     ctx.status = 404;
     ctx.body = {
-      message: 'Could not find any clothing.',
+      message: 'Could not find any nature items.',
     };
   }
 }
 
-// list single clothing type
-async function singleListClothing (ctx) {
+// list single nature type
+async function singleListNature (ctx) {
   const { language, subtitle } = ctx.state;
   const cat = ctx.params.id;
 
-  // make sure id is for clothing categories
-  const idCheck = await Category.query().where('parent', 35).orWhere('id', 35).select('id');
+  // make sure id is for nature categories
+  const idCheck = await Category.query().where('parent', 25).orWhere('id', 25).select('id');
   const idArray = idCheck.map(i => i.id);
 
-  const clothing = await Item.query()
+  const nature = await Item.query()
     .select('items.id', 'items.identifier')
     .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
     .joinRelated('category')
@@ -97,17 +97,17 @@ async function singleListClothing (ctx) {
       },
     });
 
-  if (clothing) {
+  if (nature.length > 0) {
     ctx.status = 200;
     ctx.body = {
-      data: clothing,
+      data: nature,
     };
   } else {
     ctx.status = 404;
     ctx.body = {
-      message: 'Could not find any clothing, or this is not a clothing category.',
+      message: 'Could not find any nature items, or this is not a nature items category.',
     };
   }
 }
 
-module.exports = { listClothing, singleListClothing };
+module.exports = { listNature, singleListNature };

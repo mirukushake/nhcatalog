@@ -1,10 +1,6 @@
 const router = require('koa-joi-router');
 const Joi = router.Joi;
 
-const singleAttribute = Joi.object({
-  name: Joi.string().required(),
-  subtitle: Joi.string().optional(),
-  id: Joi.number().integer().required(),
-});
+const languageParam = Joi.any().valid('en', 'ja');
 
-module.exports = singleAttribute;
+module.exports = { languageParam };
