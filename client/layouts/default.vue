@@ -60,6 +60,15 @@
           dense
         />
       </template>
+       <v-btn
+            text
+            small
+          >
+            <span>Settings</span>
+            <v-icon left class="hidden-sm-and-down">
+              mdi-cog-outline
+            </v-icon>
+          </v-btn>
     </v-app-bar>
     <v-navigation-drawer
       v-model="drawer"

@@ -13,7 +13,7 @@ museum.route({
     continueOnError: true,
     output: {
       200: {
-        body: schema.creatureSchema,
+        body: schema.creatureSchema
       },
     },
   },

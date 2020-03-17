@@ -9,6 +9,8 @@ const recipes = require('./data/recipes');
 const clothing = require('./data/clothing');
 const collectibles = require('./data/collectibles');
 const materials = require('./data/materials');
+const nature = require('./data/nature');
+const works = require('./data/publicworks');
 
 const data = router();
 
@@ -21,5 +23,7 @@ data.use(recipes);
 data.use(clothing);
 data.use(collectibles);
 data.use(materials);
+data.use(nature);
+data.use(works)
 
 module.exports = data;

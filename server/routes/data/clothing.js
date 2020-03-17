@@ -1,6 +1,8 @@
 const router = require('koa-joi-router');
 const Joi = router.Joi;
 const ctrl = require('../../controllers/clothing');
+const paramSchema = require('../../schemas/common');
+const schema = require('../../schemas/shops');
 const { getParams } = require('../../middleware/getParams');
 
 const clothing = router();
@@ -9,6 +11,9 @@ const clothing = router();
 clothing.route({
   method: 'get',
   path: '/clothing',
+  validate: {
+    continueOnError: true,
+  },
   handler: [ getParams, ctrl.listClothing ],
 });
 
