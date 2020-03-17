@@ -12,7 +12,6 @@ async function listCategories (ctx) {
     if (categories.length > 0) {
       ctx.status = 200;
       ctx.body = {
-        status: 'success',
         data: categories,
       };
     } else {
@@ -37,7 +36,6 @@ async function listCategories (ctx) {
     if (categories.length > 0) {
       ctx.status = 200;
       ctx.body = {
-        status: 'success',
         data: categories,
       };
     } else {
