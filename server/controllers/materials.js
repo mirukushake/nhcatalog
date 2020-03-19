@@ -5,11 +5,11 @@ async function listMaterials (ctx) {
   const { language, subtitle } = ctx.state;
 
   const materials = await Item.query()
-    .select('items.id', 'items.identifier')
+    .select('items.id', 'items.slug')
     .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
     .joinRelated('category')
     .join('category_names', 'category_names.cat_id', 'category.id').where('category_names.lang_id', language)
-    .select('items.cat_id', 'category_names.name as cat_name', 'category.identifier as cat_identifier', 'size', 'sell_price')
+    .select('items.cat_id', 'category_names.name as cat_name', 'category.slug as cat_slug', 'size', 'sell_price')
     .where('items.cat_id', 51)
     .withGraphFetched('[shop(locale, currency, selection), recipes.materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
@@ -26,7 +26,7 @@ async function listMaterials (ctx) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'recipes.final_item_id', language);
       },
       selection (builder) {
-        builder.select('price', 'identifier');
+        builder.select('price', 'slug');
       },
       info (builder) {
         builder.select('mat_id', 'qty', 'order');

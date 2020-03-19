@@ -6,11 +6,11 @@ async function listCollectibles (ctx) {
   const { language, subtitle } = ctx.state;
 
   const collectibles = await Item.query()
-    .select('items.id', 'items.identifier')
+    .select('items.id', 'items.slug')
     .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
     .joinRelated('category')
     .join('category_names', 'category_names.cat_id', 'category.id').where('category_names.lang_id', language)
-    .select('items.cat_id', 'category_names.name as cat_name', 'category.identifier as cat_identifier', 'size', 'sell_price')
+    .select('items.cat_id', 'category_names.name as cat_name', 'category.slug as cat_slug', 'size', 'sell_price')
     .where('category.parent', 45).orWhere('category.id', 45)
     .withGraphFetched('[shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
@@ -27,7 +27,7 @@ async function listCollectibles (ctx) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'recipes.final_item_id', language);
       },
       selection (builder) {
-        builder.select('price', 'identifier');
+        builder.select('price', 'slug');
       },
       info (builder) {
         builder.select('mat_id', 'qty', 'order');
@@ -66,11 +66,11 @@ async function singleListCollectible (ctx) {
   const idArray = idCheck.map(i => i.id);
 
   const collectible = await Item.query()
-    .select('items.id', 'items.identifier')
+    .select('items.id', 'items.slug')
     .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
     .joinRelated('category')
     .join('category_names', 'category_names.cat_id', 'category.id').where('category_names.lang_id', language)
-    .select('items.cat_id', 'category_names.name as cat_name', 'category.identifier as cat_identifier', 'size', 'sell_price')
+    .select('items.cat_id', 'category_names.name as cat_name', 'category.slug as cat_slug', 'size', 'sell_price')
     .whereIn('category.id', idArray).andWhere('category.id', cat)
     .withGraphFetched('[shop(locale, currency, selection), recipes.materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
@@ -84,7 +84,7 @@ async function singleListCollectible (ctx) {
         builder.modify('nameOnly', 'item_names', 'name.item_id', 'recipes.final_item_id', language);
       },
       selection (builder) {
-        builder.select('price', 'identifier');
+        builder.select('price', 'slug');
       },
       info (builder) {
         builder.select('mat_id', 'qty', 'order');

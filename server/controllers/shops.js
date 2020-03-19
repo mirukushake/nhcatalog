@@ -3,17 +3,15 @@ const Item = require('../models/item')
 
 // list all shops (name only)
 async function listShops (ctx) {
-  const { language, subtitle, sort, order, page, size, search } = ctx.state;
+  const { language, subtitle } = ctx.state;
 
   const shops = await Shop.query()
     .modify('setLocale', 'shop_names', 'shop_id', 'shops.id', language, subtitle)
-    .select('id', 'identifier', 'is_unlock', 'unlock_method');
+    .select('id', 'slug', 'is_unlock');
 
   if (shops) {
     ctx.status = 200;
-    ctx.body = {
-      data: shops,
-    };
+    ctx.body = { shops };
   } else {
     ctx.status = 404;
     ctx.body = {
@@ -30,14 +28,14 @@ async function singleShop (ctx) {
    const shop = await Shop.query()
     .findById(shopId)
     .modify('setLocale', 'shop_names', 'shop_id', 'shops.id', language, subtitle)
-    .select('id', 'identifier')
+    .select('id', 'slug')
     .withGraphFetched('items(locale, currency, selection, category)')
     .modifiers({
       locale(builder) {
         builder.modify('setLocale', 'item_names', 'shop_items.item_id', 'name.item_id', language, subtitle);
       },
       selection(builder) {
-        builder.select('items.id', 'identifier', 'price', 'sell_price', 'items.cat_id');
+        builder.select('items.id', 'slug', 'price', 'sell_price', 'items.cat_id');
       },
       category(builder) {
         builder.modify('catName', 'items', language);

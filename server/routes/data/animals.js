@@ -7,30 +7,16 @@ const animals = router();
 
 animals.route({
   method: 'get',
-  path: '/villagers',
+  path: '/animals',
   validate: {
     continueOnError: true,
     output: {
       200: {
-        body: schema.villagerSchema
+        body: schema.animalSchema
       }
   },
   },
-  handler: [ getParams, ctrl.listVillagers ],
-});
-
-animals.route({
-  method: 'get',
-  path: '/special-characters',
-  validate: {
-    continueOnError: true,
-    output: {
-      200: {
-        body: schema.SPSchema
-      }
-  },
-  },
-  handler:  [ getParams, ctrl.listSPCharacters ],
+  handler: [ getParams, ctrl.listAnimals ],
 });
 
 module.exports = animals;

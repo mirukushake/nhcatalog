@@ -25,7 +25,6 @@ shops.route({
   path: '/shops/:id',
   validate: {
     continueOnError: true,
-    params: Joi.number().integer(),
     output: {
       200: {
         body: schema.singleShopSchema

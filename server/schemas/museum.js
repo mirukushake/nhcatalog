@@ -2,7 +2,7 @@ const router = require('koa-joi-router');
 const Joi = router.Joi;
 
 const creatureSchema =  Joi.object({
-  data: Joi.array().items(
+  creatures: Joi.array().items(
     Joi.object({
       id: Joi.number().integer().required(),
       item_id: Joi.number().integer().required(),
@@ -14,6 +14,11 @@ const creatureSchema =  Joi.object({
       season: Joi.allow([null, Joi.array().items(
         Joi.object({
           creature_id: Joi.number().integer(),
+          seasons: Joi.array().items(Joi.number().integer()).required(),
+          start_time: Joi.string().allow(null),
+          end_time: Joi.string().allow(null),
+          is_allday: Joi.boolean().required(),
+          hemisphere: Joi.string().valid('north', 'south').required(),
         })
       )])
     })

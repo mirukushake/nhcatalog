@@ -6,10 +6,9 @@ const shopListSchema = Joi.object({
     Joi.object({
       name: Joi.string().required(),
       subtitle: Joi.string().optional(),
-      identifier: Joi.string().required(),
+      slug: Joi.string().required(),
       id: Joi.number().integer().required(),
       is_unlock: Joi.boolean(),
-      unlock_method: Joi.allow([null, Joi.string()]),
     })
   )
 });
@@ -18,14 +17,14 @@ const singleShopSchema = Joi.object({
   data: Joi.object({
     name: Joi.string(),
     id: Joi.number().integer(),
-    identifier: Joi.string(),
+    slug: Joi.string(),
     items: Joi.array().items(
     Joi.object({
       name: Joi.string().required(),
       subtitle: Joi.string().optional(),
       currency_name: Joi.string().required(),
       id: Joi.number().integer().required(),
-      identifier: Joi.string().required(),
+      slug: Joi.string().required(),
       price: Joi.allow([null, Joi.number().integer().required()]),
       sell_price: Joi.allow([null, Joi.number().integer().required()]),
       cat_id: Joi.number().integer().required(),

@@ -188,8 +188,8 @@ export default {
     async getMenuItems () {
       const items = await this.$axios.get('/categories');
       const flat = await this.$axios.get('/categories?flat=true');
-      const editflat = flat.data.data.map(x => ({ name: x.identifier, id: x.id, title: x.name }));
-      const editlist = items.data.data.map(y => ({ ...y, children: y.children.map(x => ({ name: x.identifier, id: x.id, title: x.name })) }));
+      const editflat = items.data.flat.map(x => ({ name: x.slug, id: x.id, title: x.name }));
+      const editlist = items.data.categories.map(y => ({ ...y, children: y.children.map(x => ({ name: x.slug, id: x.id, title: x.name })) }));
       await this.$store.dispatch('layout/getItems', editflat);
       this.linkData = editlist;
     },

@@ -73,7 +73,7 @@ export default {
     async getData () {
       try {
         this.loading = true;
-        const { data } = await this.$axios.get('/villagers');
+        const { data } = await this.$axios.get('/animals?type=villager');
         this.characters = data.data;
         this.loading = false;
       } catch (err) {

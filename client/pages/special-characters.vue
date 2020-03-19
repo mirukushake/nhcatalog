@@ -71,7 +71,7 @@ export default {
     async getData () {
       try {
         this.loading = true;
-        const { data } = await this.$axios.get('/special-characters');
+        const { data } = await this.$axios.get('/animals?type=npc');
         this.characters = data.data;
         this.loading = false;
       } catch (err) {

@@ -1,6 +1,5 @@
 const router = require('koa-joi-router');
-// const Joi = router.Joi;
-// const schema = require('../../schemas/recipes');
+const schema = require('../../schemas/recipes');
 const ctrl = require('../../controllers/recipes');
 const { getParams } = require('../../middleware/getParams');
 
@@ -11,11 +10,11 @@ recipes.route({
   path: '/recipes',
   validate: {
     continueOnError: true,
-  //   output: {
-  //     200: {
-  //       body: schema.recipeListSchema
-  //     }
-  // },
+    output: {
+      200: {
+        body: schema.recipeListSchema
+        }
+    },
   },
   handler: [ getParams, ctrl.listRecipes ],
 });

@@ -1,32 +1,20 @@
 const router = require('koa-joi-router');
 const Joi = router.Joi;
 
-const villagerSchema = Joi.object({
-  data: Joi.array().items(
+const animalSchema = Joi.object({
+  animals: Joi.array().items(
     Joi.object({
       name: Joi.string().required(),
       subtitle: Joi.string().optional(),
       id: Joi.number().integer().required(),
-      identifier: Joi.string().required(),
-      personality_id: Joi.number().integer().required(),
-      personality: Joi.string().required(),
+      slug: Joi.string().required(),
+      personality_id: Joi.number().integer().optional(),
+      personality: Joi.string().optional(),
       birthday: Joi.date().allow(null),
-      species_id: Joi.number().integer().required(),
-      species: Joi.string().required(),
+      species_id: Joi.number().integer().optional(),
+      species: Joi.string().optional(),
     })
   ),
 });
 
-const SPSchema = Joi.object({
-  data: Joi.array().items(
-    Joi.object({
-      name: Joi.string().required(),
-      subtitle: Joi.string().optional(),
-      id: Joi.number().integer().required(),
-      identifier: Joi.string().required(),
-      birthday: Joi.date().allow(null),
-    })
-  ),
-});
-
-module.exports = { villagerSchema, SPSchema };
+module.exports = { animalSchema };

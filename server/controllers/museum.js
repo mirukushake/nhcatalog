@@ -21,9 +21,7 @@ async function listCreatures (ctx) {
 
   if (creatures.length > 0) {
     ctx.status = 200;
-    ctx.body = {
-      data: creatures,
-    };
+    ctx.body = { creatures };
   } else {
     ctx.status = 404;
     ctx.body = {
@@ -55,9 +53,7 @@ async function listSingleCreature (ctx) {
 
   if (creatures.length > 0) {
     ctx.status = 200;
-    ctx.body = {
-      data: creatures,
-    };
+    ctx.body = { creatures };
   } else {
     ctx.status = 404;
     ctx.body = {

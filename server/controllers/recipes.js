@@ -23,9 +23,7 @@ async function listRecipes (ctx) {
 
   if (recipes) {
     ctx.status = 200;
-    ctx.body = {
-      data: recipes,
-    };
+    ctx.body = { recipes };
   } else {
     ctx.status = 404;
     ctx.body = {

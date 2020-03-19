@@ -25,12 +25,12 @@ museum.route({
   path: '/creatures/:id',
   validate: {
     continueOnError: true,
-    // output: {
-    //   200: {
-    //     body: schema.creatureSchema,
-    //   },
-    // },
-  },
+    output: {
+      200: {
+        body: schema.creatureSchema,
+        },
+      },
+    },
   handler: [getParams, ctrl.listSingleCreature],
 });
 
