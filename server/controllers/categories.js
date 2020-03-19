@@ -8,6 +8,7 @@ async function listCategories (ctx) {
       .select('id', 'slug', 'order', 'parent')
       // .where('is_menu', true);
 
+
     const categories = await Category.query().where('parent', null)
       .modify('setLocale', 'category_names', 'cat_id', 'categories.id', language, subtitle)
       .select('id', 'slug', 'order')
