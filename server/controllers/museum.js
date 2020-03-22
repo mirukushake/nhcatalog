@@ -7,19 +7,16 @@ async function listCreatures (ctx) {
 
   const creatures = await Creature.query()
     .skipUndefined()
-    .modify('setLocale', 'item_names', 'creatures.item_id', 'name.item_id', language, subtitle)
+    .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
     .select('id', 'creatures.item_id', 'section', 'order')
     .withGraphFetched('season(hemi)')
     .modifiers({
-      locale (builder) {
-        builder.modify('setLocale', 'item_names', 'items.id', 'name.item_id', language, subtitle);
-      },
       hemi (builder) {
         builder.where('hemisphere', hemisphere);
       },
-    });
+    }).debug();
 
-  if (creatures.length > 0) {
+  if (creatures) {
     ctx.status = 200;
     ctx.body = { creatures };
   } else {
@@ -37,21 +34,20 @@ async function listSingleCreature (ctx) {
 
   const creatures = await Creature.query()
     .skipUndefined()
-    .modify('setLocale', 'item_names', 'creatures.item_id', 'name.item_id', language, subtitle)
-    .joinRelated('creature')
+    .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
+    .joinRelated('creature(type)')
     .select('creatures.id', 'creatures.item_id', 'section', 'order', 'cat_id')
-    .where('cat_id', id)
     .withGraphFetched('season(hemi)')
     .modifiers({
-      locale (builder) {
-        builder.modify('setLocale', 'item_names', 'items.id', 'name.item_id', language, subtitle);
-      },
       hemi (builder) {
         builder.where('hemisphere', hemisphere);
       },
+      type (builder) {
+        builder.where('cat_id', id);
+      },
     });
 
-  if (creatures.length > 0) {
+  if (creatures) {
     ctx.status = 200;
     ctx.body = { creatures };
   } else {

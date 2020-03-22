@@ -8,7 +8,7 @@ class BaseModel extends Model {
   static get modifiers () {
     return {
       setLocale (builder, jointable, joincol, origin, language, subtitle) {
-        builder.skipUndefined().join(`${jointable} as name`, joincol, `${origin}`)
+        builder.skipUndefined().join(`${jointable} as name`, `name.${joincol}`, `${origin}`)
           .where('name.lang_id', language)
           .select('name.name as name')
           .modify(function (qb) {

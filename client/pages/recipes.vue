@@ -1,7 +1,7 @@
 <template>
   <div v-if="pageInfo" class="container">
     <div>
-      <h1 class="display-1 info--text">
+      <h1 class="display-1 info--text text-capitalize">
         {{ pageInfo.title }}
       </h1>
     </div>

@@ -1,5 +1,5 @@
 const Shop = require('../models/shop');
-const Item = require('../models/item')
+const Item = require('../models/item');
 
 // list all shops (name only)
 async function listShops (ctx) {
@@ -22,25 +22,25 @@ async function listShops (ctx) {
 
 // list all items in a shop
 async function singleShop (ctx) {
-   const { language, subtitle, sort, order, page, size, search } = ctx.state;
-   const shopId = ctx.params.id;
+  const { language, subtitle } = ctx.state;
+  const shopId = ctx.params.id;
 
-   const shop = await Shop.query()
+  const shop = await Shop.query()
     .findById(shopId)
     .modify('setLocale', 'shop_names', 'shop_id', 'shops.id', language, subtitle)
     .select('id', 'slug')
     .withGraphFetched('items(locale, currency, selection, category)')
     .modifiers({
-      locale(builder) {
+      locale (builder) {
         builder.modify('setLocale', 'item_names', 'shop_items.item_id', 'name.item_id', language, subtitle);
       },
-      selection(builder) {
+      selection (builder) {
         builder.select('items.id', 'slug', 'price', 'sell_price', 'items.cat_id');
       },
-      category(builder) {
+      category (builder) {
         builder.modify('catName', 'items', language);
       },
-      currency(builder) {
+      currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
     });

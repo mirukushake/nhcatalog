@@ -20,35 +20,24 @@
             clearable
           />
         </v-toolbar>
-        <v-btn-toggle
-          v-model="hemi"
-          tile
-          color="primary"
-          group
-          class="d-flex justify-center"
-        >
-          <v-btn value="north">
-            Northern Hemisphere
-          </v-btn>
-
-          <v-btn value="south">
-            Southern Hemisphere
-          </v-btn>
-        </v-btn-toggle>
       </template>
       <template v-slot:item.image="{ item }">
         <v-avatar color="secondary" dark class="my-2">
           <v-icon>{{ item.image }}</v-icon>
         </v-avatar>
       </template>
+      <template v-slot:item.name="{ item }">
+        <div>{{ item.name }}</div>
+        <div v-if="item.subtitle" class="grey--text">
+          {{ item.subtitle }}
+        </div>
+      </template>
       <template v-slot:item.seasons="{ item }">
         <div v-for="(season, i) in item.season" :key="i">
-          <span v-if="season.is_allday === false">
+          <span v-if="season.seasons != null">
             {{ formatTime(season.seasons) }}, <span class="font-weight-bold">{{ formatHour(season.start_time, season.end_time) }}</span>
           </span>
-          <span v-else>
-            All day
-          </span>
+          <span />
         </div>
       </template>
     </v-data-table>
@@ -68,12 +57,10 @@ export default {
     search: '',
     loading: false,
     creatures: [],
-    hemi: 'north',
     headers: [
       { text: '', value: 'image', sortable: false },
       { text: 'Name', value: 'name' },
       { text: 'Time', value: 'seasons', sortable: false },
-      { text: 'Shadow', value: 'size' },
       { text: 'Sell Price', value: 'sell_price' },
       { text: 'Location', value: 'location', sortable: false },
 
@@ -82,6 +69,9 @@ export default {
   computed: {
     subId () {
       return this.id || null;
+    },
+    hemi () {
+      return this.$store.state.usersettings.settings.hemisphere;
     },
   },
   watch: {
@@ -98,26 +88,32 @@ export default {
         this.loading = true;
         const { data } = await this.$axios.get(`/creatures/${this.subId}?hemi=${this.hemi}`);
         this.loading = false;
-        this.creatures = data.data;
+        this.creatures = data.creatures;
       } catch (err) {
         this.loading = false;
       }
     },
     formatTime (array) {
-      if (array.length > 1) {
-        const startMonth = this.$dayjs().set('month', Math.min(...array) - 1).format('MMMM');
-        const lastMonth = this.$dayjs().set('month', Math.max(...array) - 1).format('MMMM');
+      if (array != null && array.length > 1) {
+        const startMonth = this.$dayjs().locale(this.$i18n.locale).set('month', array[0] - 1).format('MMMM');
+        const lastMonth = this.$dayjs().locale(this.$i18n.locale).set('month', array[array.length - 1] - 1).format('MMMM');
 
         return `${startMonth} - ${lastMonth}`;
+      } else if (array != null && array.length > 1) {
+        return this.$dayjs().locale(this.$i18n.locale).set('month', array[0] - 1).format('MMMM');
       } else {
-        return this.$dayjs().set('month', array[0] - 1).format('MMMM');
+        return 'shit';
       }
     },
     formatHour (start, end) {
-      const startTime = this.$dayjs().set('hour', start.split(':')[0]).set('minute', 0).format('H:mm');
-      const endTime = this.$dayjs().set('hour', end.split(':')[0]).set('minute', 0).format('H:mm');
+      if (start != null && end != null) {
+        const startTime = this.$dayjs().locale(this.$i18n.locale).set('hour', start.split(':')[0]).set('minute', 0).format('H:mm');
+        const endTime = this.$dayjs().locale(this.$i18n.locale).set('hour', end.split(':')[0]).set('minute', 0).format('H:mm');
 
-      return `${startTime} - ${endTime}`;
+        return `${startTime} - ${endTime}`;
+      } else {
+        return 'fuck!';
+      }
     },
   },
 };

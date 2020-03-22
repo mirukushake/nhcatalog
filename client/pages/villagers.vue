@@ -74,7 +74,7 @@ export default {
       try {
         this.loading = true;
         const { data } = await this.$axios.get('/animals?type=villager');
-        this.characters = data.data;
+        this.characters = data.animals;
         this.loading = false;
       } catch (err) {
         this.loading = false;

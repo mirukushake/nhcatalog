@@ -16,7 +16,7 @@ export const actions = {
 };
 
 export const getters = {
-  getInfo: (state) => identifier => {
-    return state.menuItems.find(cat => cat.name === identifier);
+  getInfo: (state) => slug => {
+    return state.menuItems.find(cat => cat.name === slug);
   },
 };

@@ -80,6 +80,7 @@ export default {
           fallbackLocale: null,
         },
         lazy: true,
+        vueI18nloader: true,
         langDir: 'lang/',
 
       },

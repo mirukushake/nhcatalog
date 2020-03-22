@@ -2,7 +2,6 @@ const Language = require('../models/language');
 
 const getParams = async (ctx, next) => {
   try {
-
     const lang = await Language.query().skipUndefined().where('code', '=', ctx.query.locale).select('id');
     const sub = await Language.query().skipUndefined().where('code', '=', ctx.query.subtitle).select('id');
 

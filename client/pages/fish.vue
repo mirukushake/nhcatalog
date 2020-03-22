@@ -13,7 +13,7 @@
 import dataTable from '../components/creatures_table';
 
 export default {
-  name: 'Bugs',
+  name: 'Fish',
   components: {
     dataTable,
   },
@@ -21,7 +21,7 @@ export default {
   }),
   computed: {
     pageInfo () {
-      return this.$store.getters['layout/getInfo']('bugs');
+      return this.$store.getters['layout/getInfo']('fish');
     },
   },
   methods: {

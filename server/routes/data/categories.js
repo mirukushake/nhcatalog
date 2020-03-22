@@ -13,11 +13,19 @@ categories.route({
     continueOnError: true,
     output: {
       200: {
-        body: schema.categorySchema
-      }
-  },
+        body: schema.categorySchema,
+      },
+    },
   },
   handler: [getParams, ctrl.listCategories],
+});
+
+categories.post('/categories', (ctx) => {
+  ctx.throw(405);
+});
+
+categories.put('/categories', (ctx) => {
+  ctx.throw(405);
 });
 
 module.exports = categories;

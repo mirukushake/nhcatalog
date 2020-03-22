@@ -12,9 +12,9 @@ museum.route({
   validate: {
     continueOnError: true,
     output: {
-      200: {
-        body: schema.creatureSchema
-      },
+      // 200: {
+      //   body: schema.creatureSchema,
+      // },
     },
   },
   handler: [getParams, ctrl.listCreatures],
@@ -28,9 +28,9 @@ museum.route({
     output: {
       200: {
         body: schema.creatureSchema,
-        },
       },
     },
+  },
   handler: [getParams, ctrl.listSingleCreature],
 });
 

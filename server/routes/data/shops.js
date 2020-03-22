@@ -1,5 +1,4 @@
 const router = require('koa-joi-router');
-const Joi = router.Joi;
 const schema = require('../../schemas/shops');
 const ctrl = require('../../controllers/shops');
 const { getParams } = require('../../middleware/getParams');
@@ -13,11 +12,11 @@ shops.route({
     continueOnError: true,
     output: {
       200: {
-        body: schema.shopListSchema
-      }
+        body: schema.shopListSchema,
+      },
+    },
   },
-  },
-  handler: [ getParams, ctrl.listShops ],
+  handler: [getParams, ctrl.listShops],
 });
 
 shops.route({
@@ -27,12 +26,11 @@ shops.route({
     continueOnError: true,
     output: {
       200: {
-        body: schema.singleShopSchema
-      }
+        body: schema.singleShopSchema,
+      },
+    },
   },
-  },
-  handler: [ getParams, ctrl.singleShop ],
+  handler: [getParams, ctrl.singleShop],
 });
-
 
 module.exports = shops;

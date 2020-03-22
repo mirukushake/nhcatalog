@@ -18,7 +18,6 @@
             <v-list-item-subtitle>Unlock method and/or description</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <v-divider style="max-width: 50%" />
       </v-list>
     </section>
   </div>
@@ -42,7 +41,7 @@ export default {
       try {
         this.loading = true;
         const { data } = await this.$axios.get('/shops');
-        this.shops = data.data;
+        this.shops = data.shops;
         this.loading = false;
       } catch (err) {
         this.loading = false;
