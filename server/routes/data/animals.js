@@ -19,4 +19,20 @@ animals.route({
   handler: [ getParams, ctrl.listAnimals ],
 });
 
+animals.post('/animals', (ctx) => {
+  ctx.throw(405);
+});
+
+animals.put('/animals', (ctx) => {
+  ctx.throw(405);
+});
+
+animals.patch('/animals', (ctx) => {
+  ctx.throw(405);
+});
+
+animals.delete('/animals', (ctx) => {
+  ctx.throw(405);
+});
+
 module.exports = animals;

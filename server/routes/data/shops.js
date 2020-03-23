@@ -33,4 +33,28 @@ shops.route({
   handler: [getParams, ctrl.singleShop],
 });
 
+shops.post('/shops', (ctx) => {
+  ctx.throw(405);
+});
+
+shops.put('/shops', (ctx) => {
+  ctx.throw(405);
+});
+
+shops.patch('/shops', (ctx) => {
+  ctx.throw(405);
+});
+
+shops.post('/shops/:id', (ctx) => {
+  ctx.throw(405);
+});
+
+shops.put('/shops/:id', (ctx) => {
+  ctx.throw(405);
+});
+
+shops.patch('/shops/:id', (ctx) => {
+  ctx.throw(405);
+});
+
 module.exports = shops;

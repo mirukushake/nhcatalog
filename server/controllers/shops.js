@@ -10,6 +10,7 @@ async function listShops (ctx) {
     .select('id', 'slug', 'is_unlock');
 
   if (shops) {
+    ctx.set('Cache-Control', 'max-age=3600');
     ctx.status = 200;
     ctx.body = { shops };
   } else {
@@ -32,10 +33,10 @@ async function singleShop (ctx) {
     .withGraphFetched('items(locale, currency, selection, category)')
     .modifiers({
       locale (builder) {
-        builder.modify('setLocale', 'item_names', 'shop_items.item_id', 'name.item_id', language, subtitle);
+        builder.modify('setLocale', 'item_names', 'item_id', 'shop_items.item_id', language, subtitle);
       },
       selection (builder) {
-        builder.select('items.id', 'slug', 'price', 'sell_price', 'items.cat_id');
+        builder.select('items.id', 'slug', 'price', 'sell_price', 'items.cat_id', 'image_url');
       },
       category (builder) {
         builder.modify('catName', 'items', language);
@@ -46,10 +47,9 @@ async function singleShop (ctx) {
     });
 
   if (shop) {
+    ctx.set('Cache-Control', 'max-age=3600');
     ctx.status = 200;
-    ctx.body = {
-      data: shop,
-    };
+    ctx.body = { shop };
   } else {
     ctx.status = 404;
     ctx.body = {

@@ -14,8 +14,9 @@ const shopListSchema = Joi.object({
 });
 
 const singleShopSchema = Joi.object({
-  data: Joi.object({
+  shop: Joi.object({
     name: Joi.string(),
+    subtitle: Joi.string().optional(),
     id: Joi.number().integer(),
     slug: Joi.string(),
     items: Joi.array().items(
@@ -29,6 +30,7 @@ const singleShopSchema = Joi.object({
         sell_price: Joi.allow([null, Joi.number().integer().required()]),
         cat_id: Joi.number().integer().required(),
         cat_name: Joi.string().required(),
+        image_url: Joi.string().allow(null),
       }),
     ),
   }),

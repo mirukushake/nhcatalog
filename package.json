@@ -10,7 +10,7 @@
     "start": "nuxt start",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "test": "jest",
+    "test": "jest --forceExit --maxWorkers=1",
     "server": "nodemon server/index.js"
   },
   "dependencies": {

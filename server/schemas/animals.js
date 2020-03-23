@@ -13,6 +13,7 @@ const animalSchema = Joi.object({
       birthday: Joi.date().allow(null),
       species_id: Joi.number().integer().optional(),
       species: Joi.string().optional(),
+      image_url: Joi.string().allow(null),
     })
   ),
 });

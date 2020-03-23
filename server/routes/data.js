@@ -2,28 +2,20 @@ const router = require('koa-joi-router');
 // const Joi = router.Joi;
 const categories = require('./data/categories');
 const animals = require('./data/animals');
-// const furniture = require('./data/furniture');
-const museum = require('./data/museum');
+const items = require('./data/items');
+const creatures = require('./data/creatures');
 const shops = require('./data/shops');
 const recipes = require('./data/recipes');
-const clothing = require('./data/clothing');
-const collectibles = require('./data/collectibles');
-const materials = require('./data/materials');
-const nature = require('./data/nature');
 const works = require('./data/publicworks');
 
 const data = router();
 
 data.use(categories);
 data.use(animals);
-// data.use(furniture);
-data.use(museum);
+data.use(items);
+data.use(creatures);
 data.use(shops);
 data.use(recipes);
-data.use(clothing);
-data.use(collectibles);
-data.use(materials);
-data.use(nature);
-data.use(works)
+data.use(works);
 
 module.exports = data;

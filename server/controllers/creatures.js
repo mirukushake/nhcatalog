@@ -58,18 +58,4 @@ async function listSingleCreature (ctx) {
   }
 }
 
-async function listFossils (ctx) {
-  // if (fossils.length > 0) {
-  //   ctx.status = 200;
-  //   ctx.body = {
-  //     data: fossils,
-  //   };
-  // } else {
-  //   ctx.status = 404;
-  //   ctx.body = {
-  //     message: 'Could not find any creatures.',
-  //   };
-  // }
-}
-
-module.exports = { listCreatures, listSingleCreature, listFossils };
+module.exports = { listCreatures, listSingleCreature };
