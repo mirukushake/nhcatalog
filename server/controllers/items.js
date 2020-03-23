@@ -1,5 +1,4 @@
 const Item = require('../models/item');
-const Category = require('../models/category');
 
 // list all items
 async function listItems (ctx) {
@@ -9,9 +8,9 @@ async function listItems (ctx) {
     .select('items.id', 'items.slug')
     .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
     .joinRelated('category')
-    .modify('catName', 'items')
+    .modify('catName', 'items', language)
     .select('items.cat_id', 'size', 'sell_price')
-    .where('items.id', 723)
+    .where('items.id', 3196)
     .withGraphFetched('[shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
       locale (builder) {
@@ -27,7 +26,7 @@ async function listItems (ctx) {
         builder.modify('nameOnly', 'item_names', 'item_id', 'recipes.final_item_id', language);
       },
       selection (builder) {
-        builder.select('price', 'slug');
+        builder.select('price', 'slug', 'shop_items.shop_id');
       },
       info (builder) {
         builder.select('mat_id', 'qty', 'order');
