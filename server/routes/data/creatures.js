@@ -12,9 +12,9 @@ creatures.route({
   validate: {
     continueOnError: true,
     output: {
-      // 200: {
-      //   body: schema.creatureSchema,
-      // },
+      200: {
+        body: schema.creatureSchema,
+      },
     },
   },
   handler: [getParams, ctrl.listCreatures],
@@ -46,6 +46,10 @@ creatures.patch('/creatures', (ctx) => {
   ctx.throw(405);
 });
 
+creatures.delete('/creatures', (ctx) => {
+  ctx.throw(405);
+});
+
 creatures.post('/creatures/:id', (ctx) => {
   ctx.throw(405);
 });
@@ -57,5 +61,10 @@ creatures.put('/creatures/:id', (ctx) => {
 creatures.patch('/creatures/:id', (ctx) => {
   ctx.throw(405);
 });
+
+creatures.delete('/creatures/:id', (ctx) => {
+  ctx.throw(405);
+});
+
 
 module.exports = creatures;

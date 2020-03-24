@@ -45,6 +45,10 @@ shops.patch('/shops', (ctx) => {
   ctx.throw(405);
 });
 
+shops.delete('/shops', (ctx) => {
+  ctx.throw(405);
+});
+
 shops.post('/shops/:id', (ctx) => {
   ctx.throw(405);
 });
@@ -54,6 +58,10 @@ shops.put('/shops/:id', (ctx) => {
 });
 
 shops.patch('/shops/:id', (ctx) => {
+  ctx.throw(405);
+});
+
+shops.delete('/shops/:id', (ctx) => {
   ctx.throw(405);
 });
 

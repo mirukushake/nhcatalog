@@ -60,10 +60,10 @@ export default {
     characters: [],
     headers: [
       { text: '', value: 'image', sortable: false },
-      { text: 'Name', value: 'name' },
-      { text: 'Personality', value: 'personality' },
-      { text: 'Birthday', value: 'birthday' },
-      { text: 'Species', value: 'species' },
+      { text: this.$t('headers.animal_name'), value: 'name' },
+      { text: this.$t('headers.personality'), value: 'personality' },
+      { text: this.$t('headers.birthday'), value: 'birthday' },
+      { text: this.$t('headers.species'), value: 'species' },
     ],
   }),
   mounted () {

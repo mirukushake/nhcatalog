@@ -60,8 +60,8 @@ export default {
     characters: [],
     headers: [
       { text: '', value: 'image', sortable: false },
-      { text: 'Name', value: 'name' },
-      { text: 'Birthday', value: 'birthday' },
+      { text: this.$t('headers.animal_name'), value: 'name' },
+      { text: this.$t('headers.birthday'), value: 'birthday' },
     ],
   }),
   mounted () {

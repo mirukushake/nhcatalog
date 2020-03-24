@@ -68,12 +68,12 @@
             small
             v-on="on"
           >
-            <span>Settings</span>
+            <span>{{ $t('meta.settings') }}</span>
           </v-btn>
         </template>
         <v-card v-if="newSettings">
           <v-card-title>
-            <span class="headline">User Settings</span>
+            <span class="headline">{{ $t('meta.settings') }}</span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -90,11 +90,11 @@
                     class="d-flex justify-center"
                   >
                     <v-btn value="north">
-                      Northern Hemisphere
+                      {{ $t('creatures.north_hemisphere') }}
                     </v-btn>
 
                     <v-btn value="south">
-                      Southern Hemisphere
+                      {{ $t('creatures.south_hemisphere') }}
                     </v-btn>
                   </v-btn-toggle>
                 </v-col>

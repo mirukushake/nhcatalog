@@ -5,8 +5,8 @@ const recipeListSchema = Joi.object({
   recipes: Joi.array().items(
     Joi.object({
       id: Joi.number().integer().required(),
-      recipe_id: Joi.number().integer().required(),
       final_item_id: Joi.number().integer().required(),
+      recipe_item_id: Joi.number().integer().allow(null),
       name: Joi.string().required(),
       subtitle: Joi.string().optional(),
       cat_id: Joi.number().integer().required(),

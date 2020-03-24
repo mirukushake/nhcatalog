@@ -28,4 +28,12 @@ categories.put('/categories', (ctx) => {
   ctx.throw(405);
 });
 
+categories.patch('/categories', (ctx) => {
+  ctx.throw(405);
+});
+
+categories.delete('/categories', (ctx) => {
+  ctx.throw(405);
+});
+
 module.exports = categories;

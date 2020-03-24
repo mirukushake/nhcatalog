@@ -60,9 +60,9 @@ export default {
     headers: [
       { text: '', value: 'image', sortable: false },
       { text: 'Name', value: 'name' },
-      { text: 'Time', value: 'seasons', sortable: false },
-      { text: 'Sell Price', value: 'sell_price' },
-      { text: 'Location', value: 'location', sortable: false },
+      { text: this.$t('headers.time'), value: 'seasons', sortable: false },
+      { text: this.$t('headers.sell_price'), value: 'sell_price' },
+      { text: this.$t('headers.location'), value: 'location', sortable: false },
 
     ],
   }),

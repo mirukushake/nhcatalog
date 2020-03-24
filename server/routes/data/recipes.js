@@ -19,4 +19,20 @@ recipes.route({
   handler: [ getParams, ctrl.listRecipes ],
 });
 
+recipes.post('/recipes', (ctx) => {
+  ctx.throw(405);
+});
+
+recipes.put('/recipes', (ctx) => {
+  ctx.throw(405);
+});
+
+recipes.patch('/recipes', (ctx) => {
+  ctx.throw(405);
+});
+
+recipes.delete('/recipes', (ctx) => {
+  ctx.throw(405);
+});
+
 module.exports = recipes;

@@ -9,14 +9,16 @@ async function listCreatures (ctx) {
     .skipUndefined()
     .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
     .select('id', 'creatures.item_id', 'section', 'order')
+    // add location to select later
     .withGraphFetched('season(hemi)')
     .modifiers({
       hemi (builder) {
         builder.where('hemisphere', hemisphere);
       },
-    }).debug();
+    });
 
   if (creatures) {
+    ctx.set('Cache-Control', 'max-age=3600');
     ctx.status = 200;
     ctx.body = { creatures };
   } else {
@@ -37,6 +39,7 @@ async function listSingleCreature (ctx) {
     .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
     .joinRelated('creature(type)')
     .select('creatures.id', 'creatures.item_id', 'section', 'order', 'cat_id')
+    // add location to select later
     .withGraphFetched('season(hemi)')
     .modifiers({
       hemi (builder) {
@@ -48,6 +51,7 @@ async function listSingleCreature (ctx) {
     });
 
   if (creatures) {
+    ctx.set('Cache-Control', 'max-age=3600');
     ctx.status = 200;
     ctx.body = { creatures };
   } else {

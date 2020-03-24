@@ -20,6 +20,7 @@ async function listCategories (ctx) {
     });
 
   if (categories && flat) {
+    ctx.set('Cache-Control', 'max-age=3600');
     ctx.status = 200;
     ctx.body = {
       categories, flat,

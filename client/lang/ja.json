@@ -9,11 +9,35 @@
   "meta": {
     "login": "ログイン",
     "register": "新規登録",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "settings": "設定"
+  },
+   "headers": {
+    "item_name": "アイテム",
+    "animal_name": "名前",
+    "price": "値段",
+    "sell_price": "Sell price",
+    "obtained": "Obtained from",
+    "size": "Size",
+    "used_in": "Used in",
+    "personality": "性格",
+    "birthday": "誕生日",
+    "species": "Species",
+    "category": "Category",
+    "materials": "素材",
+    "variations": "Variations",
+    "time": "時間",
+    "location": "場所"
   },
   "common": {
     "unknown": "不明",
     "everything": "全部"
+  },
+  "creatures": {
+    "north_hemisphere": "北半球",
+    "south_hemisphere": "南半球",
+    "all_day": "一日中",
+    "all_year": "年中"
   },
   "messages": {
     "404": "リクエストされたURLは存在しません",
