@@ -34,6 +34,20 @@ creatures.route({
   handler: [getParams, ctrl.listSingleCreature],
 });
 
+creatures.route({
+  method: 'get',
+  path: '/current-creatures',
+  validate: {
+    continueOnError: true,
+    output: {
+      200: {
+        body: schema.creatureSchema,
+      },
+    },
+  },
+  handler: [getParams, ctrl.listCreaturesByDate],
+});
+
 creatures.post('/creatures', (ctx) => {
   ctx.throw(405);
 });
@@ -63,6 +77,22 @@ creatures.patch('/creatures/:id', (ctx) => {
 });
 
 creatures.delete('/creatures/:id', (ctx) => {
+  ctx.throw(405);
+});
+
+creatures.post('/current-creatures', (ctx) => {
+  ctx.throw(405);
+});
+
+creatures.put('/current-creatures', (ctx) => {
+  ctx.throw(405);
+});
+
+creatures.patch('/current-creatures', (ctx) => {
+  ctx.throw(405);
+});
+
+creatures.delete('/current-creatures', (ctx) => {
   ctx.throw(405);
 });
 

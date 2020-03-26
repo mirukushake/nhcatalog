@@ -11,15 +11,16 @@ const creatureSchema =  Joi.object({
       section: Joi.number().integer().allow(null),
       order: Joi.number().integer().allow(null),
       cat_id: Joi.number().integer().allow(null),
+      cat_name: Joi.string().optional(),
+      start_time: Joi.string().allow(null),
+      end_time: Joi.string().allow(null),
+      is_allday: Joi.boolean().allow(null),
       // location: Joi.string().allow(null),
       season: Joi.allow([null, Joi.array().items(
         Joi.object({
           creature_id: Joi.number().integer(),
           seasons: Joi.array().items(Joi.number().integer()).allow(null),
-          is_allday: Joi.boolean().allow(null),
-          start_time: Joi.string().allow(null),
-          end_time: Joi.string().allow(null),
-          is_allday: Joi.boolean().required(),
+          is_allyear: Joi.boolean().allow(null),
           hemisphere: Joi.string().valid('north', 'south').required(),
         })
       )])
