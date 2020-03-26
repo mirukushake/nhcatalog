@@ -58,14 +58,18 @@ export default {
     search: '',
     loading: false,
     characters: [],
-    headers: [
-      { text: '', value: 'image', sortable: false },
-      { text: this.$t('headers.animal_name'), value: 'name' },
-      { text: this.$t('headers.personality'), value: 'personality' },
-      { text: this.$t('headers.birthday'), value: 'birthday' },
-      { text: this.$t('headers.species'), value: 'species' },
-    ],
   }),
+  computed: {
+    headers () {
+      return [
+        { text: '', value: 'image', sortable: false },
+        { text: this.$t('headers.animal_name'), value: 'name' },
+        { text: this.$t('headers.personality'), value: 'personality' },
+        { text: this.$t('headers.birthday'), value: 'birthday' },
+        { text: this.$t('headers.species'), value: 'species' },
+      ];
+    },
+  },
   mounted () {
     this.getData();
   },
