@@ -12,10 +12,8 @@ const knexConfig = require('./knexfile');
 const knex = Knex(knexConfig.development);
 Model.knex(knex);
 
-// logging config
-
 // routes
-const publicRoutes = require('./routes/data');
+const publicRoutes = require('./routes/routes');
 
 const app = new Koa();
 const PORT = process.env.SERVER_PORT || 8081;
@@ -23,6 +21,8 @@ const PORT = process.env.SERVER_PORT || 8081;
 const corsOptions = {
   origin: '*',
 };
+
+// logging config
 app.use(logger({
   streams: [{
     level: 'info',

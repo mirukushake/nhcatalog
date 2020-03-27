@@ -58,12 +58,16 @@ export default {
     search: '',
     loading: false,
     characters: [],
-    headers: [
-      { text: '', value: 'image', sortable: false },
-      { text: this.$t('headers.animal_name'), value: 'name' },
-      { text: this.$t('headers.birthday'), value: 'birthday' },
-    ],
   }),
+  computed: {
+    headers () {
+      return [
+        { text: '', value: 'image', sortable: false },
+        { text: this.$t('headers.animal_name'), value: 'name' },
+        { text: this.$t('headers.birthday'), value: 'birthday' },
+      ];
+    },
+  },
   mounted () {
     this.getData();
   },

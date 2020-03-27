@@ -7,15 +7,20 @@ const creatures = require('./data/creatures');
 const shops = require('./data/shops');
 const recipes = require('./data/recipes');
 const works = require('./data/publicworks');
+const auth = require('./auth/auth');
 
-const data = router();
+const routes = router();
 
-data.use(categories);
-data.use(animals);
-data.use(items);
-data.use(creatures);
-data.use(shops);
-data.use(recipes);
-data.use(works);
+// data routes
+routes.use(categories);
+routes.use(animals);
+routes.use(items);
+routes.use(creatures);
+routes.use(shops);
+routes.use(recipes);
+routes.use(works);
 
-module.exports = data;
+//auth routes
+routes.use(auth);
+
+module.exports = routes;

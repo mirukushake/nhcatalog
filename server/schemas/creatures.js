@@ -10,6 +10,7 @@ const creatureSchema =  Joi.object({
       subtitle: Joi.string().optional(),
       section: Joi.number().integer().allow(null),
       order: Joi.number().integer().allow(null),
+      sell_price: Joi.number().integer().allow(null),
       cat_id: Joi.number().integer().allow(null),
       cat_name: Joi.string().optional(),
       start_time: Joi.string().allow(null),

@@ -2,6 +2,10 @@ require('dotenv').config();
 
 export default {
   mode: 'universal',
+  server: {
+    port: 5000, // default: 3000
+    host: '0.0.0.0' // default: localhost
+  },
   srcDir: 'client/',
   /*
   ** Headers of the page
@@ -97,11 +101,11 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: process.env.API_URL,
+    baseURL: 'https://8081-dot-11346140-dot-devshell.appspot.com/',
   },
 
   proxy: {
-    '/api/': { target: 'http://localhost:8081', pathRewrite: { '^/api/': '' } },
+    '/api/': { target: 'https://8081-dot-11346140-dot-devshell.appspot.com/', pathRewrite: { '^/api/': '' } },
   },
 
   vuetify: {
@@ -130,6 +134,17 @@ export default {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
+      if (ctx.isDev && ctx.isClient) {
+        config.module.rules.push({
+          enforce: "pre",
+          test: /\.(js|vue)$/,
+          loader: "eslint-loader",
+          exclude: /(node_modules)/,
+          options: {
+            fix: true
+          }
+        });
+      }
     },
   },
 };

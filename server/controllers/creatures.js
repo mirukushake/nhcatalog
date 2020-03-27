@@ -11,7 +11,8 @@ async function listCreatures (ctx) {
   const creatures = await Creature.query()
     .skipUndefined()
     .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
-    .select('id', 'creatures.item_id', 'section', 'order', 'is_allday')
+    .joinRelated('creature')
+    .select('creatures.id', 'creatures.item_id', 'section', 'order', 'sell_price', 'is_allday')
     .select(raw('start_time::time, end_time::time'))
     // add location to select later
     .withGraphFetched('season(hemi)')
@@ -42,7 +43,7 @@ async function listSingleCreature (ctx) {
     .skipUndefined()
     .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
     .joinRelated('creature(type)')
-    .select('id', 'creatures.item_id', 'section', 'order', 'is_allday')
+    .select('creatures.id', 'creatures.item_id', 'section', 'order', 'sell_price', 'is_allday')
     .select(raw('start_time::time, end_time::time'))
     // add location to select later
     .withGraphFetched('season(hemi)')
@@ -71,8 +72,8 @@ async function listCreaturesByDate (ctx) {
   const { language, subtitle } = ctx.state;
   const hemisphere = ctx.query.hemi || 'north';
 
+  // get current month and time
   const current = dayjs.utc();
-
   const currentTime = current.local().format('HH:00:00');
   const currentMonth = current.local().format('M');
 
@@ -95,7 +96,7 @@ async function listCreaturesByDate (ctx) {
   const creaturesFinal = await Creature.query()
     .skipUndefined()
     .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
-    .select('creatures.id', 'creatures.item_id', 'section', 'order', 'is_allday')
+    .select('creatures.id', 'creatures.item_id', 'section', 'order', 'sell_price', 'is_allday')
     .select(raw('start_time::time, end_time::time'))
     .joinRelated('creature')
     .modify('catName', 'creature', language)
