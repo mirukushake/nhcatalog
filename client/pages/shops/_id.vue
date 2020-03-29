@@ -33,8 +33,8 @@ export default {
       try {
         this.loading = true;
         const { data } = await this.$axios.get(`/shops/${this.$route.params.id}`);
-        this.pageTitle = data.data.name;
-        this.itemsList = data.data.items;
+        this.pageTitle = data.shop.name;
+        this.itemsList = data.shop.items;
         this.loading = false;
       } catch (err) {
         this.loading = false;

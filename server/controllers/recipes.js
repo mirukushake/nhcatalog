@@ -10,14 +10,14 @@ async function listRecipes (ctx) {
     .modify('setLocale', 'item_names', 'item_id', 'final_item_id', language, subtitle)
     .joinRelated('product')
     .join('category_names', 'category_names.cat_id', 'product.cat_id').where('category_names.lang_id', language)
-    .select('product.cat_id', 'category_names.name as cat_name')
+    .select('product.cat_id', 'category_names.name as cat_name', 'image_url')
     .withGraphFetched('materials(locale, info)')
     .modifiers({
       locale (builder) {
         builder.modify('setLocale', 'item_names', 'item_id', 'items.id', language);
       },
       info (builder) {
-        builder.select('mat_id', 'qty').orderBy('order');
+        builder.select('plural', 'mat_id', 'qty').orderBy('order');
       },
     });
 

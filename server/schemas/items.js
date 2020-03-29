@@ -1,7 +1,7 @@
 const router = require('koa-joi-router');
 const Joi = router.Joi;
 
-const itemSchema =  Joi.object({
+const itemSchema = Joi.object({
   items: Joi.array().items(
     Joi.object({
       id: Joi.number().integer().required(),
@@ -12,12 +12,15 @@ const itemSchema =  Joi.object({
       cat_id: Joi.number().integer().required(),
       size: Joi.string().allow(null),
       sell_price: Joi.number().integer().allow(null),
+      is_reorder: Joi.boolean().allow(null),
+      is_trade: Joi.boolean().allow(null),
+      is_remake: Joi.boolean().allow(null),
+      image_url: Joi.string().allow('', null),
       shop: Joi.array(),
       recipes: Joi.array(),
       used_in: Joi.array(),
-    })
+    }),
   ),
 });
-
 
 module.exports = { itemSchema };

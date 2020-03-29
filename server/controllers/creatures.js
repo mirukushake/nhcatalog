@@ -1,8 +1,8 @@
 const { raw } = require('objection');
-const Creature = require('../models/creature');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
-dayjs.extend(utc)
+const Creature = require('../models/creature');
+dayjs.extend(utc);
 
 async function listCreatures (ctx) {
   const { language, subtitle } = ctx.state;
@@ -12,8 +12,9 @@ async function listCreatures (ctx) {
     .skipUndefined()
     .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
     .joinRelated('creature')
-    .select('creatures.id', 'creatures.item_id', 'section', 'order', 'sell_price', 'is_allday')
-    .select(raw('start_time::time, end_time::time'))
+    .select('creatures.id', 'creatures.item_id', 'section', 'order', 'sell_price', 'is_allday', 'image_url')
+    .select(raw('start_time::time[], end_time::time[]'))
+    .orderBy('section', 'order')
     // add location to select later
     .withGraphFetched('season(hemi)')
     .modifiers({
@@ -43,8 +44,9 @@ async function listSingleCreature (ctx) {
     .skipUndefined()
     .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
     .joinRelated('creature(type)')
-    .select('creatures.id', 'creatures.item_id', 'section', 'order', 'sell_price', 'is_allday')
-    .select(raw('start_time::time, end_time::time'))
+    .select('creatures.id', 'creatures.item_id', 'section', 'order', 'sell_price', 'is_allday', 'image_url')
+    .select(raw('start_time::time[], end_time::time[]'))
+    .orderBy('order')
     // add location to select later
     .withGraphFetched('season(hemi)')
     .modifiers({
@@ -79,8 +81,13 @@ async function listCreaturesByDate (ctx) {
 
   // get ids of current creatures
   const creatures = await Creature.query()
+    .with('alltimes', (qb) => {
+      qb.select(raw('id, UNNEST(start_time) as start_time, UNNEST(end_time) as end_time'))
+        .from('creatures');
+    })
     .with('times', (qb) => {
-    qb.select(raw('id, generate_series(start_time, end_time, \'1 hour\')::time as hours')).from('creatures')
+      qb.select(raw('id, generate_series(start_time, end_time, \'1 hour\')::time as hours'))
+        .from('alltimes');
     })
     .select('creatures.id')
     .leftJoin('times', 'times.id', 'creatures.id')
@@ -97,13 +104,13 @@ async function listCreaturesByDate (ctx) {
     .skipUndefined()
     .modify('setLocale', 'item_names', 'item_id', 'creatures.item_id', language, subtitle)
     .select('creatures.id', 'creatures.item_id', 'section', 'order', 'sell_price', 'is_allday')
-    .select(raw('start_time::time, end_time::time'))
+    .select(raw('start_time::time[], end_time::time[]'))
     .joinRelated('creature')
     .modify('catName', 'creature', language)
     // add location to select later
     .withGraphFetched('season(hemi)')
     .whereIn('creatures.id', idsOnly)
-    .orderBy('name')
+    .orderBy('section', 'order')
     .modifiers({
       hemi (builder) {
         builder.where('hemisphere', hemisphere);

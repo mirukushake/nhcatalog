@@ -1,8 +1,8 @@
 <template>
-  <div v-if="pageInfo" class="container">
+  <div class="container">
     <div>
       <h1 class="display-1 info--text text-capitalize">
-        {{ pageInfo.title }}
+        {{ $t('menu.recipes') }}
       </h1>
     </div>
 
@@ -28,13 +28,19 @@
             />
           </v-toolbar>
         </template>
-        <template v-slot:item.image="{ item }">
+        <template v-slot:item.image_url="{ item }">
           <v-avatar color="secondary" dark class="my-2">
             <v-icon>{{ item.image }}</v-icon>
           </v-avatar>
         </template>
+        <template v-slot:item.name="{ item }">
+          <div>{{ item.name }}</div>
+          <div v-if="item.subtitle" class="grey--text">
+            {{ item.subtitle }}
+          </div>
+        </template>
         <template v-slot:item.cat_name="{ item }">
-          <nuxt-link :to="{ name: item.cat_identifier, params: { catId: item.cat_id }}">
+          <nuxt-link :to="'/' + catSlug(item.cat_id)">
             {{ item.cat_name }}
           </nuxt-link>
         </template>
@@ -55,18 +61,18 @@ export default {
     search: '',
     loading: false,
     recipes: [],
-    headers: [
-      { text: '', value: 'image', sortable: false },
-      { text: 'Name', value: 'name' },
-      { text: 'Category', value: 'cat_name' },
-      { text: 'Materials', value: 'materials', sortable: false },
-      { text: 'Obtained from', value: 'obtained', sortable: false },
-      { text: 'Unlock', value: 'unlock', sortable: false },
-    ],
   }),
   computed: {
-    pageInfo () {
-      return this.$store.getters['layout/getInfo']('recipes');
+    headers () {
+      return [
+        { text: '', value: 'image', sortable: false },
+        { text: this.$t('headers.item_name'), value: 'name' },
+        { text: this.$t('headers.category'), value: 'cat_name' },
+        { text: this.$t('headers.materials'), value: 'materials', sortable: false },
+      ];
+    },
+    cats () {
+      return this.$store.state.layout.menuItems;
     },
   },
   mounted () {
@@ -77,11 +83,14 @@ export default {
       try {
         this.loading = true;
         const { data } = await this.$axios.get('/recipes');
-        this.recipes = data.data;
+        this.recipes = data.recipes;
         this.loading = false;
       } catch (err) {
         this.loading = false;
       }
+    },
+    catSlug (id) {
+      return this.cats.find(i => i.id === id).name;
     },
   },
   head () {

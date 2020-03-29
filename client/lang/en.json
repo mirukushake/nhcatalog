@@ -26,12 +26,17 @@
     "category": "Category",
     "materials": "Materials",
     "variations": "Variations",
+    "season": "Season",
     "time": "Time",
-    "location": "Location"
+    "location": "Location",
+    "remake": "Remake",
+    "catalog": "Catalog"
   },
   "common": {
     "unknown": "Unknown",
-    "everything": "Everything"
+    "everything": "Everything",
+    "ok": "✔︎",
+    "notok": "✖︎"
   },
   "creatures": {
     "north_hemisphere": "Northern Hemisphere",

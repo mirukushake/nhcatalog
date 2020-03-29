@@ -21,9 +21,13 @@
           />
         </v-toolbar>
       </template>
-      <template v-slot:item.image="{ item }">
-        <v-avatar color="secondary" dark class="my-2">
-          <v-icon>{{ item.image }}</v-icon>
+      <template v-slot:item.image_url="{ item }">
+        <v-avatar dark class="my-2">
+          <v-img
+            v-if="item.image_url != null"
+            alt="item.name"
+            :src="`${img_url}/creatures/${item.image_url}`"
+          />
         </v-avatar>
       </template>
       <template v-slot:item.name="{ item }">
@@ -35,9 +39,19 @@
       <template v-slot:item.seasons="{ item }">
         <div v-for="(season, i) in item.season" :key="i">
           <span v-if="season.seasons != null">
-            {{ formatTime(season.seasons) }}, <span class="font-weight-bold">{{ formatHour(season.start_time, season.end_time) }}</span>
+            {{ formatTime(season.seasons) }}
           </span>
-          <span />
+          <span v-else-if="season.is_allyear === true">
+            {{ $t("creatures.all_year") }}
+          </span>
+        </div>
+      </template>
+      <template v-slot:item.start_time="{ item }">
+        <div v-if="item.is_allday === true">
+          {{ $t("creatures.all_day") }}
+        </div>
+        <div v-else>
+          {{ formatHour(item.start_time, item.end_time) }}
         </div>
       </template>
     </v-data-table>
@@ -57,18 +71,22 @@ export default {
     search: '',
     loading: false,
     creatures: [],
-    headers: [
-      { text: '', value: 'image', sortable: false },
-      { text: 'Name', value: 'name' },
-      { text: this.$t('headers.time'), value: 'seasons', sortable: false },
-      { text: this.$t('headers.sell_price'), value: 'sell_price' },
-      { text: this.$t('headers.location'), value: 'location', sortable: false },
-
-    ],
+    img_url: process.env.IMG_URL,
   }),
   computed: {
     subId () {
       return this.id || null;
+    },
+    headers () {
+      return [
+        { text: '', value: 'image_url', width: 100, align: 'center', sortable: false },
+        { text: 'Name', value: 'name' },
+        { text: this.$t('headers.season'), value: 'seasons', sortable: false },
+        { text: this.$t('headers.time'), value: 'start_time', sortable: false },
+        { text: this.$t('headers.sell_price'), value: 'sell_price' },
+        { text: this.$t('headers.location'), value: 'location', sortable: false },
+
+      ];
     },
     hemi () {
       return this.$store.state.usersettings.settings.hemisphere;
@@ -95,24 +113,36 @@ export default {
     },
     formatTime (array) {
       if (array != null && array.length > 1) {
-        const startMonth = this.$dayjs().locale(this.$i18n.locale).set('month', array[0] - 1).format('MMMM');
-        const lastMonth = this.$dayjs().locale(this.$i18n.locale).set('month', array[array.length - 1] - 1).format('MMMM');
+        const grouped = array.reduce((arr, val, i, a) => {
+          if (!i || val !== a[i - 1] + 1) { arr.push([]); }
+          arr[arr.length - 1].push(val);
+          return arr;
+        }, []);
 
-        return `${startMonth} - ${lastMonth}`;
-      } else if (array != null && array.length > 1) {
-        return this.$dayjs().locale(this.$i18n.locale).set('month', array[0] - 1).format('MMMM');
+        const strings = grouped.map((x) => {
+          if (x.length > 1) {
+            const startMonth = this.$dayjs().locale(this.$i18n.locale).set('month', x[0] - 1).format('MMMM');
+            const lastMonth = this.$dayjs().locale(this.$i18n.locale).set('month', x[x.length - 1] - 1).format('MMMM');
+
+            return `${startMonth} - ${lastMonth}`;
+          } else {
+            return this.$dayjs().locale(this.$i18n.locale).set('month', x[0] - 1).format('MMMM');
+          }
+        });
+
+        return strings.join(', ');
       } else {
-        return 'shit';
+        return this.$dayjs().locale(this.$i18n.locale).set('month', array[0] - 1).format('MMMM');
       }
     },
     formatHour (start, end) {
-      if (start != null && end != null) {
-        const startTime = this.$dayjs().locale(this.$i18n.locale).set('hour', start.split(':')[0]).set('minute', 0).format('H:mm');
-        const endTime = this.$dayjs().locale(this.$i18n.locale).set('hour', end.split(':')[0]).set('minute', 0).format('H:mm');
-
-        return `${startTime} - ${endTime}`;
-      } else {
-        return 'fuck!';
+      if (start != null & end != null) {
+        const times = start.map((x, i) => {
+          const startString = this.$dayjs().locale(this.$i18n.locale).set('hour', x.split(':')[0]).set('minute', 0).format('H:mm');
+          const endString = this.$dayjs().locale(this.$i18n.locale).set('hour', end[i].split(':')[0]).set('minute', 0).format('H:mm');
+          return `${startString} - ${endString}`;
+        });
+        return times.join(', ');
       }
     },
   },

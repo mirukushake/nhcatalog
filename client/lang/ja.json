@@ -16,22 +16,27 @@
     "item_name": "アイテム",
     "animal_name": "名前",
     "price": "値段",
-    "sell_price": "Sell price",
-    "obtained": "Obtained from",
-    "size": "Size",
-    "used_in": "Used in",
+    "sell_price": "売値",
+    "obtained": "入手方法",
+    "size": "サイズ",
+    "used_in": "作れるDIYレシピ",
     "personality": "性格",
     "birthday": "誕生日",
-    "species": "Species",
-    "category": "Category",
+    "species": "種族",
+    "category": "カテゴリー",
     "materials": "素材",
-    "variations": "Variations",
+    "variations": "カラーバリエーション",
+    "season": "季節",
     "time": "時間",
-    "location": "場所"
+    "location": "場所",
+    "remake": "リメイク",
+    "catalog": "カタログ"
   },
   "common": {
     "unknown": "不明",
-    "everything": "全部"
+    "everything": "全部",
+    "ok": "○",
+    "notok": "✖︎"
   },
   "creatures": {
     "north_hemisphere": "北半球",

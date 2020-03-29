@@ -22,7 +22,7 @@
       />
       <v-spacer />
 
-      <v-menu offset-y>
+      <!-- <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn
             text
@@ -48,7 +48,7 @@
             </v-list-item>
           </v-list-item-group>
         </v-list>
-      </v-menu>
+      </v-menu> -->
       <template v-if="$vuetify.breakpoint.smAndDown" v-slot:extension>
         <v-text-field
           prepend-inner-icon="mdi-magnify"
@@ -60,6 +60,27 @@
           dense
         />
       </template>
+      <v-btn
+        text
+        small
+        to="/login"
+      >
+        <v-icon left class="hidden-sm-and-up">
+          mdi-login
+        </v-icon>
+        <span class="hidden-sm-and-down">{{ $t('meta.login') }}</span>
+      </v-btn>
+
+      <v-btn
+        text
+        small
+        to="/register"
+      >
+        <v-icon left class="hidden-sm-and-up">
+          mdi-account-plus
+        </v-icon>
+        <span class="hidden-sm-and-down">{{ $t('meta.register') }}</span>
+      </v-btn>
 
       <v-dialog v-model="dialog" persistent max-width="600px">
         <template v-slot:activator="{ on }">
@@ -68,7 +89,10 @@
             small
             v-on="on"
           >
-            <span>{{ $t('meta.settings') }}</span>
+            <v-icon left class="hidden-sm-and-up">
+              mdi-cogs
+            </v-icon>
+            <span class="hidden-sm-and-down">{{ $t('meta.settings') }}</span>
           </v-btn>
         </template>
         <v-card v-if="newSettings">
@@ -80,6 +104,26 @@
               <v-row>
                 <v-col cols="12">
                   <h2 class="info--text">
+                    Language
+                  </h2>
+                  <v-btn-toggle
+                    v-model="currentLocale"
+                    tile
+                    color="primary"
+                    group
+                    class="d-flex flex-wrap"
+                  >
+                    <v-btn
+                      v-for="locale in availableLocales"
+                      :key="locale.code"
+                      :value="locale.code"
+                    >
+                      {{ locale.code }}
+                    </v-btn>
+                  </v-btn-toggle>
+                </v-col>
+                <v-col cols="12">
+                  <h2 class="info--text">
                     Hemisphere
                   </h2>
                   <v-btn-toggle
@@ -87,7 +131,7 @@
                     tile
                     color="primary"
                     group
-                    class="d-flex justify-center"
+                    class="d-flex flex-wrap"
                   >
                     <v-btn value="north">
                       {{ $t('creatures.north_hemisphere') }}
@@ -98,7 +142,7 @@
                     </v-btn>
                   </v-btn-toggle>
                 </v-col>
-                <v-col cols="12" sm="6">
+                <v-col cols="12">
                   <h2 class="info--text">
                     Subtitles
                   </h2>
@@ -107,7 +151,7 @@
                     tile
                     color="primary"
                     group
-                    class="d-flex justify-center"
+                    class="d-flex flex-wrap"
                   >
                     <v-btn :value="true">
                       On
@@ -152,7 +196,7 @@
               </v-list-item-title>
             </v-list-item-content>
           </template>
-          <v-list-item v-for="list in navi.children" :key="list.name" :to="{ name: list.name }">
+          <v-list-item v-for="list in navi.children" :key="list.name" :to="'/' + list.name">
             <v-list-item-content>
               <v-list-item-title class="text-capitalize">
                 {{ list.title }}
@@ -206,10 +250,14 @@ export default {
       } else { return []; }
     },
   },
+  watch: {
+    dialog (newValue, oldValue) {
+      this.getSettings();
+    },
+  },
   mounted () {
     this.getLocale();
     this.getMenuItems();
-    this.getSettings();
   },
   methods: {
     blank () {},
@@ -223,16 +271,13 @@ export default {
       await this.$store.dispatch('layout/getItems', editflat);
       this.linkData = editlist;
     },
-    async changeLocale (locale) {
-      await this.$i18n.setLocale(locale);
-      this.getLocale();
-      this.$router.go({ path: this.$router.currentRoute.path, force: true });
-    },
     async getSettings () {
       this.newSettings = await this.$store.state.usersettings.settings;
     },
     async updateSettings () {
       await this.$store.dispatch('usersettings/changeSettings', this.newSettings);
+      await this.$i18n.setLocale(this.currentLocale);
+      this.getLocale();
       this.dialog = false;
       this.$router.go({ path: this.$router.currentRoute.path, force: true });
     },

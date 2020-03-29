@@ -5,7 +5,8 @@ async function listCategories (ctx) {
 
   const flat = await Category.query()
     .modify('setLocale', 'category_names', 'cat_id', 'categories.id', language)
-    .select('id', 'slug', 'order', 'parent');
+    .select('id', 'slug', 'order', 'parent')
+    .where('is_menu', true);
 
   const categories = await Category.query().where('parent', null)
     .modify('setLocale', 'category_names', 'cat_id', 'categories.id', language)
@@ -16,6 +17,7 @@ async function listCategories (ctx) {
     .modifyGraph('children', (builder) => {
       builder.modify('setLocale', 'category_names', 'cat_id', 'categories.id', language)
         .select('id', 'slug', 'order')
+        .where('is_menu', true)
         .orderBy('order', 'name', 'id', 'slug');
     });
 

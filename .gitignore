@@ -93,3 +93,4 @@ sw.*
 /atsumare
 .theia
 adminsdk.json
+/client/static/images

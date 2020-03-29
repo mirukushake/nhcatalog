@@ -15,7 +15,6 @@
                 {{ shop.name }}
               </nuxt-link>
             </v-list-item-title>
-            <v-list-item-subtitle>Unlock method and/or description</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>

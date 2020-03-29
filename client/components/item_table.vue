@@ -2,7 +2,7 @@
   <section>
     <v-data-table
       :headers="headers"
-      :items="datalist"
+      :items="items"
       :loading="loading"
       :search="search"
       :footer-props="{
@@ -21,7 +21,7 @@
           />
         </v-toolbar>
       </template>
-      <template v-slot:item.image="{ item }">
+      <template v-slot:item.image_url="{ item }">
         <v-avatar color="secondary" dark class="my-2">
           <v-icon>{{ item.image }}</v-icon>
         </v-avatar>
@@ -32,13 +32,17 @@
           {{ item.subtitle }}
         </div>
       </template>
-      <template v-slot:item.cat_name="{ item }">
-        <nuxt-link :to="'/' + catSlug(item.cat_id)">
-          {{ item.cat_name }}
-        </nuxt-link>
-      </template>
-      <template v-slot:item.price="{ item }">
-        {{ item.price }} {{ item.currency_name }}
+      <template v-slot:item.obtained="{ item }">
+        <div v-if="item.shop.length">
+          <span v-for="shop in item.shop" :key="shop.recipe_id">
+            {{ shop.name }} ({{ shop.price }} {{ shop.currency_name }})
+          </span>
+        </div>
+        <div>
+          <span v-for="recipe in item.recipes" :key="recipe.recipe_id">
+            {{ recipe.name }}
+          </span>
+        </div>
       </template>
       <template v-slot:item.is_remake="{ item }">
         <div v-if="item.is_remake == true">
@@ -68,11 +72,11 @@
 
 <script>
 export default {
-  name: 'ShopTable',
+  name: 'ItemTable',
   props: {
-    datalist: {
-      type: Array,
-      default: Function,
+    id: {
+      type: Number,
+      default: null,
     },
   },
   data: () => ({
@@ -82,28 +86,33 @@ export default {
   }),
   computed: {
     subId () {
-      return this.data;
-    },
-    cats () {
-      return this.$store.state.layout.menuItems;
+      return this.id || null;
     },
     headers () {
       return [
-        { text: '', value: 'image', sortable: false },
+        { text: '', value: 'image_url', sortable: false },
         { text: this.$t('headers.item_name'), value: 'name' },
-        { text: this.$t('headers.category'), value: 'cat_name' },
-        { text: this.$t('headers.price'), value: 'price' },
         { text: this.$t('headers.sell_price'), value: 'sell_price' },
+        { text: this.$t('headers.size'), value: 'size' },
+        { text: this.$t('headers.obtained'), value: 'obtained', sortable: false },
         { text: this.$t('headers.remake'), value: 'is_remake', sortable: false, align: 'center' },
         { text: this.$t('headers.catalog'), value: 'is_reorder', sortable: false, align: 'center' },
       ];
     },
   },
   created () {
+    this.getData();
   },
   methods: {
-    catSlug (id) {
-      return this.cats.find(i => i.id === id).name;
+    async getData () {
+      try {
+        this.loading = true;
+        const { data } = await this.$axios.get(`/items/${this.subId}`);
+        this.loading = false;
+        this.items = data.items;
+      } catch (err) {
+        this.loading = false;
+      }
     },
   },
 };
