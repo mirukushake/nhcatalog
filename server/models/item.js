@@ -9,6 +9,7 @@ class Item extends BaseModel {
     const Category = require('./category');
     const Shop = require('./shop');
     const Recipe = require('./recipe');
+    const ItemVariation = require('./itemvariation');
 
     return {
       category: {
@@ -17,6 +18,14 @@ class Item extends BaseModel {
         join: {
           from: 'items.cat_id',
           to: 'categories.id',
+        },
+      },
+      variations: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: ItemVariation,
+        join: {
+          from: 'items.id',
+          to: 'item_variations.item_id',
         },
       },
       shop: {

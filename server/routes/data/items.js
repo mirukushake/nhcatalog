@@ -16,9 +16,9 @@ items.route({
       200: {
         body: schema.itemSchema,
       },
-    }
+    },
   },
-  handler: [ getParams, ctrl.listItems ],
+  handler: [getParams, ctrl.listItems],
 });
 
 // list of items by category
@@ -29,12 +29,12 @@ items.route({
   validate: {
     continueOnError: true,
     output: {
-      200: {
-        body: schema.itemSchema,
-      },
-    }
+      // 200: {
+      //   body: schema.itemSchema,
+      // },
+    },
   },
-  handler: [ getParams, ctrl.listCatItems ],
+  handler: [getParams, ctrl.listCatItems],
 });
 
 items.post('/items', (ctx) => {

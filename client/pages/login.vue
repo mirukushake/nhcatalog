@@ -6,16 +6,17 @@
       </h1>
     </div>
     <section>
+      {{ error }}
       <v-row>
         <v-col cols="6">
           <v-form ref="loginForm">
             <v-text-field
-              v-model="email"
-              :error-messages="emailErrors"
-              label="E-mail"
+              v-model="username"
+              :error-messages="usernameErrors"
+              label="Username"
               required
-              @input="$v.email.$touch()"
-              @blur="$v.email.$touch()"
+              @input="$v.username.$touch()"
+              @blur="$v.username.$touch()"
             />
             <v-text-field
               v-model="password"
@@ -28,7 +29,7 @@
             />
 
             <v-btn class="mr-4 mt-4" color="success" @click="submit">
-              submit
+              Submit
             </v-btn>
             <v-btn class="mt-4" @click="reset">
               Clear
@@ -49,24 +50,24 @@
 
 <script>
 import { validationMixin } from 'vuelidate';
-import { required, minLength, email } from 'vuelidate/lib/validators';
+import { required, minLength } from 'vuelidate/lib/validators';
 export default {
   name: 'Login',
   mixins: [validationMixin],
   validations: {
-    email: { required, email },
+    username: { required },
     password: { required, minLength: minLength(6) },
   },
   data: () => ({
-    email: null,
+    error: null,
+    username: null,
     password: null,
   }),
   computed: {
-    emailErrors () {
+    usernameErrors () {
       const errors = [];
-      if (!this.$v.email.$dirty) { return errors; }
-      !this.$v.email.email && errors.push('Must be valid e-mail');
-      !this.$v.email.required && errors.push('E-mail is required');
+      if (!this.$v.username.$dirty) { return errors; }
+      !this.$v.username.required && errors.push('Username is required');
       return errors;
     },
     passwordErrors () {
@@ -81,7 +82,15 @@ export default {
     reset () {
       this.$v.$reset();
       this.password = '';
-      this.email = '';
+      this.username = '';
+    },
+    async submit () {
+      try {
+        await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });
+        this.$router.push({ path: '/shops' });
+      } catch (err) {
+        this.error = 'The username or password you entered was incorrect.';
+      }
     },
   },
   head () {

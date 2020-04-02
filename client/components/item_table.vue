@@ -5,6 +5,9 @@
       :items="items"
       :loading="loading"
       :search="search"
+      item-key="id"
+      show-expand
+      :expanded="expanded"
       :footer-props="{
         'items-per-page-options': [20, 50, 100]
       }"
@@ -20,11 +23,28 @@
             clearable
           />
         </v-toolbar>
+        <div class="d-flex justify-center flex-wrap">
+          <v-btn class="mr-4" :color="expanded.length !== items.length ? 'success' : 'primary'" @click="toggleExpand()">
+            {{ expanded.length !== items.length ? 'Expand all' : 'Collapse All' }}
+          </v-btn>
+          <v-btn :disabled="selectedDisable" color="success">
+            Add selected to list
+          </v-btn>
+        </div>
       </template>
       <template v-slot:item.image_url="{ item }">
-        <v-avatar color="secondary" dark class="my-2">
-          <v-icon>{{ item.image }}</v-icon>
-        </v-avatar>
+        <template v-if="item.variations.length === 0">
+          <v-avatar color="secondary" dark class="my-2">
+            <v-icon>{{ item.image }}</v-icon>
+          </v-avatar>
+        </template>
+        <template v-else>
+          <v-img
+            alt="item.name"
+            max-width="50"
+            :src="`${img_url}/clothing/${getImageUrl(item.variations)}`"
+          />
+        </template>
       </template>
       <template v-slot:item.name="{ item }">
         <div>{{ item.name }}</div>
@@ -66,6 +86,32 @@
           &nbsp;
         </div>
       </template>
+      <template v-slot:item.data-table-expand="{ item, expand, isExpanded }">
+        <v-icon v-if="item.variations.length > 0" @click="expand(!isExpanded)">
+          mdi-more
+        </v-icon>
+      </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+          <v-item-group
+            v-model="selected"
+            multiple
+          >
+            <div class="d-flex justify-center flex-wrap">
+              <span v-for="variation in item.variations" :key="variation.id" class="mr-4">
+                <v-item v-slot:default="{ active, toggle }" :value="variation.id">
+                  <v-avatar dark class="my-2" :color="active ? 'accent' : ''">
+                    <v-img
+                      alt="item.name"
+                      max-width="50"
+                      :src="`${img_url}/clothing/${variation.image_url}`"
+                      @click="toggle"
+                    /></v-avatar></v-item>
+              </span>
+            </div>
+          </v-item-group>
+        </td>
+      </template>
     </v-data-table>
   </section>
 </template>
@@ -83,6 +129,9 @@ export default {
     search: '',
     loading: false,
     items: [],
+    img_url: process.env.IMG_URL,
+    selected: [],
+    expanded: [],
   }),
   computed: {
     subId () {
@@ -97,7 +146,15 @@ export default {
         { text: this.$t('headers.obtained'), value: 'obtained', sortable: false },
         { text: this.$t('headers.remake'), value: 'is_remake', sortable: false, align: 'center' },
         { text: this.$t('headers.catalog'), value: 'is_reorder', sortable: false, align: 'center' },
+        { text: 'Variations', value: 'data-table-expand' },
       ];
+    },
+    selectedDisable () {
+      if (this.selected.length > 0) {
+        return false;
+      } else {
+        return true;
+      }
     },
   },
   created () {
@@ -113,6 +170,23 @@ export default {
       } catch (err) {
         this.loading = false;
       }
+    },
+    getImageUrl (array) {
+      const url = array.find(f => f.is_first === true).image_url;
+      return url;
+    },
+    toggleExpand () {
+      if (this.expanded.length < this.items.length) {
+        this.expanded = this.items;
+      } else {
+        this.expanded = [];
+      }
+    },
+    expandAll () {
+      this.expanded = this.items;
+    },
+    collapseAll () {
+      this.expanded = [];
     },
   },
 };

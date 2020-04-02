@@ -21,34 +21,6 @@
         dense
       />
       <v-spacer />
-
-      <!-- <v-menu offset-y>
-        <template v-slot:activator="{ on }">
-          <v-btn
-            text
-            small
-            v-on="on"
-          >
-            <span>{{ currentLocale }}</span>
-            <v-icon right class="hidden-sm-and-down">
-              mdi-chevron-down
-            </v-icon>
-          </v-btn>
-        </template>
-        <v-list nav dense>
-          <v-list-item-group>
-            <v-list-item
-              v-for="locale in availableLocales"
-              :key="locale.code"
-              @click="changeLocale(locale.code)"
-            >
-              <v-list-item-content>
-                <v-list-item-title class="text-uppercase" v-text="locale.code" />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-menu> -->
       <template v-if="$vuetify.breakpoint.smAndDown" v-slot:extension>
         <v-text-field
           prepend-inner-icon="mdi-magnify"
@@ -61,6 +33,7 @@
         />
       </template>
       <v-btn
+        v-if="!isLoggedIn"
         text
         small
         to="/login"
@@ -72,6 +45,7 @@
       </v-btn>
 
       <v-btn
+        v-if="!isLoggedIn"
         text
         small
         to="/register"
@@ -80,6 +54,18 @@
           mdi-account-plus
         </v-icon>
         <span class="hidden-sm-and-down">{{ $t('meta.register') }}</span>
+      </v-btn>
+
+      <v-btn
+        v-if="isLoggedIn"
+        text
+        small
+        to="/profile"
+      >
+        <v-icon left class="hidden-sm-and-up">
+          mdi-format-list-bulleted
+        </v-icon>
+        <span class="hidden-sm-and-down">Lists</span>
       </v-btn>
 
       <v-dialog v-model="dialog" persistent max-width="600px">
@@ -176,6 +162,17 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-btn
+        v-if="isLoggedIn"
+        text
+        small
+        @click="logout"
+      >
+        <v-icon left class="hidden-sm-and-up">
+          mdi-logout
+        </v-icon>
+        <span class="hidden-sm-and-down">{{ $t('meta.logout') }}</span>
+      </v-btn>
     </v-app-bar>
     <v-navigation-drawer
       v-model="drawer"
@@ -249,6 +246,9 @@ export default {
         return newData;
       } else { return []; }
     },
+    isLoggedIn () {
+      return this.$store.state.auth.loggedIn;
+    },
   },
   watch: {
     dialog (newValue, oldValue) {
@@ -280,6 +280,10 @@ export default {
       this.getLocale();
       this.dialog = false;
       this.$router.go({ path: this.$router.currentRoute.path, force: true });
+    },
+    logout () {
+      this.$auth.logout();
+      this.$router.push({ path: '/login' });
     },
   },
 };

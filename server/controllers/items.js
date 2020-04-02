@@ -10,8 +10,8 @@ async function listItems (ctx) {
     .joinRelated('category')
     .where('is_item', true)
     .modify('catName', 'items', language)
-    .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade', 'image_url')
-    .withGraphFetched('[shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
+    .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade')
+    .withGraphFetched('[variations, shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
       locale (builder) {
         builder.modify('nameOnly', 'shop_names', 'name.shop_id', 'shops.id', language);
@@ -64,8 +64,8 @@ async function listCatItems (ctx) {
     .joinRelated('category')
     .where('is_item', true).andWhere('items.cat_id', id)
     .modify('catName', 'items', language)
-    .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade', 'image_url')
-    .withGraphFetched('[shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
+    .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade')
+    .withGraphFetched('[variations, shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
       locale (builder) {
         builder.modify('nameOnly', 'shop_names', 'name.shop_id', 'shops.id', language);

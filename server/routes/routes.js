@@ -20,7 +20,7 @@ routes.use(shops);
 routes.use(recipes);
 routes.use(works);
 
-//auth routes
+// auth routes
 routes.use(auth);
 
 module.exports = routes;

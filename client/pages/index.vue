@@ -5,7 +5,7 @@
         {{ $t('messages.welcome') }}
       </h1>
       <h1 class="title grey--text text--darken-2">
-        {{ $t('messages.welcome_subtitle') }}
+        {{ loggedInUser }}
       </h1>
     </div>
   </div>
@@ -16,6 +16,13 @@ export default {
   name: 'HomePage',
   data: () => ({
   }),
+  computed: {
+    loggedInUser () {
+      return this.$auth.user;
+    },
+  },
+  methods: {
+  },
   head: () => ({
     title: 'NH Catalog',
   }),

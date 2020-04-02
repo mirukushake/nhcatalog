@@ -35,7 +35,7 @@ async function singleShop (ctx) {
         builder.modify('setLocale', 'item_names', 'item_id', 'shop_items.item_id', language, subtitle);
       },
       selection (builder) {
-        builder.select('items.id', 'slug', 'price', 'sell_price', 'items.cat_id', 'is_reorder', 'is_remake', 'is_trade', 'image_url')
+        builder.select('items.id', 'slug', 'price', 'sell_price', 'items.cat_id', 'is_reorder', 'is_remake', 'is_trade')
           .orderBy('name');
       },
       category (builder) {

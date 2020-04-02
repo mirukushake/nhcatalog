@@ -98,17 +98,31 @@ export default {
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
+    '@nuxtjs/auth',
   ],
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: 'https://8081-dot-11346140-dot-devshell.appspot.com/',
+    baseURL: 'http://localhost:8081',
   },
 
   proxy: {
-    '/api/': { target: 'https://8081-dot-11346140-dot-devshell.appspot.com/', pathRewrite: { '^/api/': '' } },
+    '/api/': { target: 'http://localhost:8081', pathRewrite: { '^/api/': '' } },
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/auth/login', method: 'post', propertyName: 'token' },
+          user: { url: '/userinfo', method: 'get', propertyName: false },
+          logout: false,
+        },
+      },
+      redirect: false,
+    },
   },
 
   vuetify: {

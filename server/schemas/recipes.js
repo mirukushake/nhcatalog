@@ -11,7 +11,6 @@ const recipeListSchema = Joi.object({
       subtitle: Joi.string().optional(),
       cat_id: Joi.number().integer().required(),
       cat_name: Joi.string().required(),
-      image_url: Joi.string().allow(null),
       materials: Joi.array().items(
         Joi.object({
           name: Joi.string().required(),

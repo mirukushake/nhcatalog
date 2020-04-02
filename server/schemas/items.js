@@ -15,7 +15,6 @@ const itemSchema = Joi.object({
       is_reorder: Joi.boolean().allow(null),
       is_trade: Joi.boolean().allow(null),
       is_remake: Joi.boolean().allow(null),
-      image_url: Joi.string().allow('', null),
       shop: Joi.array(),
       recipes: Joi.array(),
       used_in: Joi.array(),
