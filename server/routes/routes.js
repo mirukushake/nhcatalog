@@ -8,6 +8,8 @@ const shops = require('./data/shops');
 const recipes = require('./data/recipes');
 const works = require('./data/publicworks');
 const auth = require('./auth/auth');
+const user = require('./user/user');
+const search = require('./data/search');
 
 const routes = router();
 
@@ -19,8 +21,12 @@ routes.use(creatures);
 routes.use(shops);
 routes.use(recipes);
 routes.use(works);
+routes.use(search);
 
 // auth routes
 routes.use(auth);
+
+// user routes
+routes.use(user);
 
 module.exports = routes;

@@ -6,8 +6,6 @@
       :loading="loading"
       :search="search"
       item-key="id"
-      show-expand
-      :expanded="expanded"
       :footer-props="{
         'items-per-page-options': [20, 50, 100]
       }"
@@ -24,26 +22,67 @@
           />
         </v-toolbar>
         <div class="d-flex justify-center flex-wrap">
-          <v-btn class="mr-4" :color="expanded.length !== items.length ? 'success' : 'primary'" @click="toggleExpand()">
-            {{ expanded.length !== items.length ? 'Expand all' : 'Collapse All' }}
-          </v-btn>
-          <v-btn :disabled="selectedDisable" color="success">
-            Add selected to list
-          </v-btn>
+          <v-menu
+            transition="slide-y-transition"
+            bottom
+            :y-offset="true"
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn
+                v-if="isLoggedIn"
+                depressed
+                :disabled="selectedDisable"
+                color="success"
+                :loading="processing"
+                v-on="on"
+              >
+                Add selected to list
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="list in userLists"
+                :key="list.id"
+                @click="addItems(list.id)"
+              >
+                <v-list-item-title>{{ list.title }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </template>
       <template v-slot:item.image_url="{ item }">
-        <template v-if="item.variations.length === 0">
-          <v-avatar color="secondary" dark class="my-2">
-            <v-icon>{{ item.image }}</v-icon>
-          </v-avatar>
+        <template v-if="isLoggedIn">
+          <v-item-group
+            v-model="selected"
+            multiple
+          >
+            <div class="d-flex justify-center flex-wrap">
+              <span v-for="(variation, index) in item.variations" :key="variation.id" class="mr-4">
+
+                <v-item v-if="index === 0 || expanded.includes(item.id)" v-slot:default="{ active, toggle }" :value="variation.id">
+                  <v-avatar dark class="my-2" :color="active ? 'accent' : ''">
+                    <v-img
+                      alt="item.name"
+                      max-width="50"
+                      :src="`${img_url}/items/${variation.image_url}`"
+                      @click="toggle"
+                    /></v-avatar></v-item>
+              </span>
+            </div>
+          </v-item-group>
         </template>
         <template v-else>
-          <v-img
-            alt="item.name"
-            max-width="50"
-            :src="`${img_url}/clothing/${getImageUrl(item.variations)}`"
-          />
+          <div class="d-flex justify-center flex-wrap">
+            <span v-for="variation in item.variations" :key="variation.id" class="mr-4">
+              <v-avatar dark class="my-2">
+                <v-img
+                  alt="item.name"
+                  max-width="50"
+                  :src="`${img_url}/items/${variation.image_url}`"
+                /></v-avatar>
+            </span>
+          </div>
         </template>
       </template>
       <template v-slot:item.name="{ item }">
@@ -52,67 +91,74 @@
           {{ item.subtitle }}
         </div>
       </template>
+      <template v-slot:item.shop[0].price="{ item }">
+        <div v-if="item.shop.length">
+          <span v-for="shop in item.shop" :key="shop.id">
+            {{ shop.price }} {{ shop.currency_name }}
+          </span>
+        </div>
+      </template>
       <template v-slot:item.obtained="{ item }">
         <div v-if="item.shop.length">
-          <span v-for="shop in item.shop" :key="shop.recipe_id">
-            {{ shop.name }} ({{ shop.price }} {{ shop.currency_name }})
+          <span v-for="shop in item.shop" :key="shop.id">
+            {{ shop.name }}
           </span>
         </div>
-        <div>
-          <span v-for="recipe in item.recipes" :key="recipe.recipe_id">
-            {{ recipe.name }}
+        <div v-if="item.recipes.length > 0">
+          <span>
+            recipe
           </span>
         </div>
       </template>
-      <template v-slot:item.is_remake="{ item }">
-        <div v-if="item.is_remake == true">
-          {{ $t('common.ok') }}
-        </div>
-        <div v-else-if="item.remake == false">
-          {{ $t('common.notok') }}
-        </div>
-        <div else>
-          &nbsp;
-        </div>
+      <template v-slot:item.info="{ item }">
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-icon :color="item.is_event === true ? 'secondary' : 'grey lighten-2'" v-on="on">
+              mdi-snowflake
+            </v-icon>
+          </template>
+          <span>Seasonal/event</span>
+        </v-tooltip>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-icon :color="item.is_remake === true ? 'secondary' : 'grey lighten-2'" v-on="on">
+              mdi-brush
+            </v-icon>
+          </template>
+          <span>Remake</span>
+        </v-tooltip>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-icon :color="item.is_reorder === true ? 'secondary' : 'grey lighten-2'" v-on="on">
+              mdi-cart
+            </v-icon>
+          </template>
+          <span>Catalog reorder</span>
+        </v-tooltip>
       </template>
-      <template v-slot:item.is_reorder="{ item }">
-        <div v-if="item.is_reorder == true">
-          {{ $t('common.ok') }}
-        </div>
-        <div v-else-if="item.reorder == false">
-          {{ $t('common.notok') }}
-        </div>
-        <div else>
-          &nbsp;
-        </div>
-      </template>
-      <template v-slot:item.data-table-expand="{ item, expand, isExpanded }">
-        <v-icon v-if="item.variations.length > 0" @click="expand(!isExpanded)">
+      <template v-slot:item.variations="{ item }">
+        <v-icon v-if="item.variations.length > 1" @click="expandVariation(item.id)">
           mdi-more
         </v-icon>
       </template>
-      <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length">
-          <v-item-group
-            v-model="selected"
-            multiple
-          >
-            <div class="d-flex justify-center flex-wrap">
-              <span v-for="variation in item.variations" :key="variation.id" class="mr-4">
-                <v-item v-slot:default="{ active, toggle }" :value="variation.id">
-                  <v-avatar dark class="my-2" :color="active ? 'accent' : ''">
-                    <v-img
-                      alt="item.name"
-                      max-width="50"
-                      :src="`${img_url}/clothing/${variation.image_url}`"
-                      @click="toggle"
-                    /></v-avatar></v-item>
-              </span>
-            </div>
-          </v-item-group>
-        </td>
-      </template>
     </v-data-table>
+    <v-snackbar
+      v-model="addedSnack"
+      left
+      bottom
+      color="grey darken-2"
+    >
+      {{ snackText }}
+      <v-btn
+
+        text
+        @click="addedSnack = false"
+      >
+        <v-icon>
+          mdi-close
+        </v-icon>
+      </v-btn>
+    </v-snackbar>
   </section>
 </template>
 
@@ -132,22 +178,31 @@ export default {
     img_url: process.env.IMG_URL,
     selected: [],
     expanded: [],
+    addedSnack: false,
+    snackText: null,
+    processing: false,
   }),
   computed: {
+    isLoggedIn () {
+      return this.$store.state.auth.loggedIn;
+    },
     subId () {
       return this.id || null;
     },
     headers () {
       return [
-        { text: '', value: 'image_url', sortable: false },
+        { text: '', value: 'image_url', width: 100, sortable: false, align: 'left' },
         { text: this.$t('headers.item_name'), value: 'name' },
+        { text: 'Variations', value: 'variations', sortable: false, align: 'center' },
+        { text: 'Price', value: 'shop[0].price' },
         { text: this.$t('headers.sell_price'), value: 'sell_price' },
         { text: this.$t('headers.size'), value: 'size' },
         { text: this.$t('headers.obtained'), value: 'obtained', sortable: false },
-        { text: this.$t('headers.remake'), value: 'is_remake', sortable: false, align: 'center' },
-        { text: this.$t('headers.catalog'), value: 'is_reorder', sortable: false, align: 'center' },
-        { text: 'Variations', value: 'data-table-expand' },
+        { text: 'Info', value: 'info', sortable: false },
       ];
+    },
+    userLists () {
+      return this.$store.state.auth.user.lists;
     },
     selectedDisable () {
       if (this.selected.length > 0) {
@@ -159,6 +214,7 @@ export default {
   },
   created () {
     this.getData();
+    this.getSearch();
   },
   methods: {
     async getData () {
@@ -171,22 +227,32 @@ export default {
         this.loading = false;
       }
     },
-    getImageUrl (array) {
-      const url = array.find(f => f.is_first === true).image_url;
-      return url;
-    },
-    toggleExpand () {
-      if (this.expanded.length < this.items.length) {
-        this.expanded = this.items;
+    expandVariation (row) {
+      if (this.expanded.includes(row)) {
+        const index = this.expanded.indexOf(row);
+        this.expanded.splice(index);
       } else {
-        this.expanded = [];
+        this.expanded.push(row);
       }
     },
-    expandAll () {
-      this.expanded = this.items;
+    async addItems (list) {
+      try {
+        const addedItems = { listid: list, items: this.selected };
+        // const listName = this.userLists.filter(n => n.id === list).name;
+        this.processing = true;
+        const newList = await this.$axios.patch(`/user/lists/${list}`, addedItems);
+        this.processing = false;
+        this.selected = [];
+        this.snackText = `${newList.data.added} items added to list.`;
+        this.addedSnack = true;
+      } catch (err) {
+        this.processing = false;
+      }
     },
-    collapseAll () {
-      this.expanded = [];
+    async getSearch () {
+      if (this.$route.query.search) {
+        this.search = await this.$route.query.search;
+      }
     },
   },
 };

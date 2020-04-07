@@ -9,9 +9,25 @@ const secret = process.env.SECRET;
 
 async function register (ctx) {
   try {
+    const regex = /^[a-zA-Z0-9!@#$%^&*]{6,30}$/;
     const password = ctx.request.body.password;
+    const username = ctx.request.body.username;
+    const usernameCheck = await User.query().findOne({ username });
+
+    if (ctx.request.body.businessCat != null) {
+      ctx.throw(403, 'Probably a bot');
+    }
+
+    if (usernameCheck) {
+      ctx.throw(409, 'That username already exists.');
+    }
+
+    if (!regex.test(password)) {
+      ctx.throw(422, 'Invalid password.');
+    }
+
     const hashedPasword = bcrypt.hashSync(password, salt);
-    const userInfo = { username: ctx.request.body.username, passwordhash: hashedPasword, role: 3 };
+    const userInfo = { username, passwordhash: hashedPasword, role: 3 };
     const newUser = await User.query().insert(userInfo);
 
     ctx.status = 201;
@@ -47,4 +63,29 @@ async function login (ctx) {
   }
 }
 
-module.exports = { register, login };
+async function changePassword (ctx) {
+  try {
+    const regex = /^[a-zA-Z0-9!@#$%^&*]{6,30}$/;
+    const id = await ctx.request.jwtPayload.sub;
+    const { password } = ctx.request.body;
+
+    if (!password) { ctx.throw(422, 'Password required.'); }
+
+    if (!regex.test(password)) {
+      ctx.throw(422, 'Invalid password.');
+    }
+
+    const hashedPasword = bcrypt.hashSync(password, salt);
+
+    const updatedPassword = await User.query().findById(id).patch({ passwordhash: hashedPasword }).returning('*');
+
+    if (updatedPassword) {
+      ctx.status = 200;
+    }
+  } catch (err) {
+    ctx.status = err.status || err.statusCode || 500;
+    ctx.body = { message: err.message };
+  }
+}
+
+module.exports = { register, login, changePassword };

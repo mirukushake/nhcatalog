@@ -98,6 +98,7 @@ export default {
     },
   },
   created () {
+    this.getSearch();
     this.getData();
   },
   methods: {
@@ -143,6 +144,11 @@ export default {
           return `${startString} - ${endString}`;
         });
         return times.join(', ');
+      }
+    },
+    async getSearch () {
+      if (this.$route.query.search) {
+        this.search = await this.$route.query.search;
       }
     },
   },

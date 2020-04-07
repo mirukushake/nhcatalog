@@ -11,6 +11,7 @@ async function listItems (ctx) {
     .where('is_item', true)
     .modify('catName', 'items', language)
     .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade')
+    .orderBy('name.name')
     .withGraphFetched('[variations, shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
       locale (builder) {

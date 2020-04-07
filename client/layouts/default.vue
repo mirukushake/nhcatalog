@@ -11,18 +11,35 @@
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <span><nuxt-link to="/" class="white--text">NH Catalog</nuxt-link></span>
       </v-toolbar-title>
-      <v-text-field
+
+      <v-autocomplete
+        v-model="selected"
+        :items="searchResults"
+        :loading="progress"
+        :search-input.sync="search"
         prepend-inner-icon="mdi-magnify"
+        item-text="name"
         label="Search for an item"
         single-line
         filled
         rounded
         class="mt-6 hidden-sm-and-down"
-        dense
-      />
+        return-object
+      >
+        <template v-slot:item="{ item }">
+          <v-list-item-content>
+            <v-list-item-title v-text="item.name" />
+            <v-list-item-subtitle v-text="item.cat_name" />
+          </v-list-item-content>
+        </template>
+      </v-autocomplete>
       <v-spacer />
       <template v-if="$vuetify.breakpoint.smAndDown" v-slot:extension>
-        <v-text-field
+        <v-autocomplete
+          v-model="search"
+          :items="items"
+          :loading="isLoading"
+          :search-input.sync="search"
           prepend-inner-icon="mdi-magnify"
           label="Search for an item"
           single-line
@@ -38,7 +55,7 @@
         small
         to="/login"
       >
-        <v-icon left class="hidden-sm-and-up">
+        <v-icon class="hidden-sm-and-up">
           mdi-login
         </v-icon>
         <span class="hidden-sm-and-down">{{ $t('meta.login') }}</span>
@@ -50,7 +67,7 @@
         small
         to="/register"
       >
-        <v-icon left class="hidden-sm-and-up">
+        <v-icon class="hidden-sm-and-up">
           mdi-account-plus
         </v-icon>
         <span class="hidden-sm-and-down">{{ $t('meta.register') }}</span>
@@ -62,113 +79,29 @@
         small
         to="/profile"
       >
-        <v-icon left class="hidden-sm-and-up">
+        <v-icon class="hidden-sm-and-up">
           mdi-format-list-bulleted
         </v-icon>
-        <span class="hidden-sm-and-down">Lists</span>
+        <span class="hidden-sm-and-down">My Lists</span>
       </v-btn>
 
-      <v-dialog v-model="dialog" persistent max-width="600px">
-        <template v-slot:activator="{ on }">
-          <v-btn
-            text
-            small
-            v-on="on"
-          >
-            <v-icon left class="hidden-sm-and-up">
-              mdi-cogs
-            </v-icon>
-            <span class="hidden-sm-and-down">{{ $t('meta.settings') }}</span>
-          </v-btn>
-        </template>
-        <v-card v-if="newSettings">
-          <v-card-title>
-            <span class="headline">{{ $t('meta.settings') }}</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <h2 class="info--text">
-                    Language
-                  </h2>
-                  <v-btn-toggle
-                    v-model="currentLocale"
-                    tile
-                    color="primary"
-                    group
-                    class="d-flex flex-wrap"
-                  >
-                    <v-btn
-                      v-for="locale in availableLocales"
-                      :key="locale.code"
-                      :value="locale.code"
-                    >
-                      {{ locale.code }}
-                    </v-btn>
-                  </v-btn-toggle>
-                </v-col>
-                <v-col cols="12">
-                  <h2 class="info--text">
-                    Hemisphere
-                  </h2>
-                  <v-btn-toggle
-                    v-model="newSettings.hemisphere"
-                    tile
-                    color="primary"
-                    group
-                    class="d-flex flex-wrap"
-                  >
-                    <v-btn value="north">
-                      {{ $t('creatures.north_hemisphere') }}
-                    </v-btn>
-
-                    <v-btn value="south">
-                      {{ $t('creatures.south_hemisphere') }}
-                    </v-btn>
-                  </v-btn-toggle>
-                </v-col>
-                <v-col cols="12">
-                  <h2 class="info--text">
-                    Subtitles
-                  </h2>
-                  <v-btn-toggle
-                    v-model="newSettings.subtitle"
-                    tile
-                    color="primary"
-                    group
-                    class="d-flex flex-wrap"
-                  >
-                    <v-btn :value="true">
-                      On
-                    </v-btn>
-
-                    <v-btn :value="false">
-                      Off
-                    </v-btn>
-                  </v-btn-toggle>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="blue darken-1" text @click="dialog = false">
-              Close
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="updateSettings()">
-              Save
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <v-btn
+        text
+        small
+        to="/settings"
+      >
+        <v-icon class="hidden-sm-and-up">
+          mdi-cogs
+        </v-icon>
+        <span class="hidden-sm-and-down">{{ $t('meta.settings') }}</span>
+      </v-btn>
       <v-btn
         v-if="isLoggedIn"
         text
         small
         @click="logout"
       >
-        <v-icon left class="hidden-sm-and-up">
+        <v-icon class="hidden-sm-and-up">
           mdi-logout
         </v-icon>
         <span class="hidden-sm-and-down">{{ $t('meta.logout') }}</span>
@@ -218,14 +151,14 @@ export default {
       drawer: null,
       currentLocale: null,
       linkData: null,
-      dialog: false,
-      newSettings: {},
+      selected: {},
+      search: null,
+      searchResults: [],
+      progress: false,
+      error: null,
     }
   ),
   computed: {
-    availableLocales () {
-      return this.$i18n.locales;
-    },
     menuItems () {
       return this.$store.state.layout.menuItems;
     },
@@ -251,8 +184,11 @@ export default {
     },
   },
   watch: {
-    dialog (newValue, oldValue) {
-      this.getSettings();
+    search (val) {
+      val && val.length > 2 && val !== this.selected && this.getSearch(val);
+    },
+    selected (val) {
+      this.$router.push({ path: `/${val.slug}`, query: { search: val.name } });
     },
   },
   mounted () {
@@ -260,26 +196,25 @@ export default {
     this.getMenuItems();
   },
   methods: {
-    blank () {},
     getLocale () {
       this.currentLocale = this.$i18n.getLocaleCookie();
     },
     async getMenuItems () {
       const items = await this.$axios.get('/categories');
-      const editflat = items.data.flat.map(x => ({ name: x.slug, id: x.id, title: x.name }));
+      const editflat = items.data.flat.map(x => ({ ...x, name: x.slug, id: x.id, title: x.name }));
       const editlist = items.data.categories.map(y => ({ ...y, children: y.children.map(x => ({ name: x.slug, id: x.id, title: x.name })) }));
       await this.$store.dispatch('layout/getItems', editflat);
       this.linkData = editlist;
     },
-    async getSettings () {
-      this.newSettings = await this.$store.state.usersettings.settings;
-    },
-    async updateSettings () {
-      await this.$store.dispatch('usersettings/changeSettings', this.newSettings);
-      await this.$i18n.setLocale(this.currentLocale);
-      this.getLocale();
-      this.dialog = false;
-      this.$router.go({ path: this.$router.currentRoute.path, force: true });
+    async getSearch (term) {
+      try {
+        this.progress = true;
+        const results = await this.$axios.get(`/search?q=${term}`);
+        this.searchResults = results.data.results;
+        this.progress = false;
+      } catch (err) {
+        this.progress = false;
+      }
     },
     logout () {
       this.$auth.logout();

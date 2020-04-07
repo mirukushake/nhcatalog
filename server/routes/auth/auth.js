@@ -25,15 +25,13 @@ auth.route({
 });
 
 auth.route({
-  method: 'get',
-  path: '/userinfo',
+  method: 'patch',
+  path: '/auth/changepassword',
   validate: {
+    type: 'json',
     continueOnError: true,
   },
-  handler: [authenticated, async (ctx) => {
-    const userid = await ctx.request.jwtPayload.sub;
-    ctx.body = { userid };
-  }],
+  handler: [authenticated, ctrl.changePassword],
 });
 
 module.exports = auth;

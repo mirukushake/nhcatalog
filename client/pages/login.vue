@@ -5,10 +5,18 @@
         {{ $t('meta.login') }}
       </h1>
     </div>
-    <section>
-      {{ error }}
+    <section v-if="!isLoggedIn">
       <v-row>
-        <v-col cols="6">
+        <v-col cols="12" sm="6">
+          <v-alert
+            v-if="error"
+            class="mt-2"
+            dense
+            type="error"
+            transition="scale-transition"
+          >
+            {{ error }}
+          </v-alert>
           <v-form ref="loginForm">
             <v-text-field
               v-model="username"
@@ -28,10 +36,10 @@
               @blur="$v.password.$touch()"
             />
 
-            <v-btn class="mr-4 mt-4" color="success" @click="submit">
-              Submit
+            <v-btn depressed class="mr-4 mt-4" color="success" :loading="processing" @click="submit">
+              {{ $t('meta.login') }}
             </v-btn>
-            <v-btn class="mt-4" @click="reset">
+            <v-btn depressed class="mt-4" @click="reset">
               Clear
             </v-btn>
           </v-form>
@@ -45,25 +53,32 @@
         </div>
       </v-row>
     </section>
+    <section v-else>
+      You are already logged in!
+    </section>
   </div>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
+import { required } from 'vuelidate/lib/validators';
 export default {
   name: 'Login',
   mixins: [validationMixin],
   validations: {
     username: { required },
-    password: { required, minLength: minLength(6) },
+    password: { required },
   },
   data: () => ({
     error: null,
     username: null,
     password: null,
+    processing: false,
   }),
   computed: {
+    isLoggedIn () {
+      return this.$store.state.auth.loggedIn;
+    },
     usernameErrors () {
       const errors = [];
       if (!this.$v.username.$dirty) { return errors; }
@@ -73,7 +88,6 @@ export default {
     passwordErrors () {
       const errors = [];
       if (!this.$v.password.$dirty) { return errors; }
-      !this.$v.password.minLength && errors.push('Password must be at least 6 characters long');
       !this.$v.password.required && errors.push('Password is required.');
       return errors;
     },
@@ -86,9 +100,16 @@ export default {
     },
     async submit () {
       try {
-        await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });
-        this.$router.push({ path: '/shops' });
+        this.$v.$touch();
+
+        if (!this.$v.$invalid) {
+          this.processing = true;
+          await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });
+          this.processing = false;
+          this.$router.go(-1);
+        }
       } catch (err) {
+        this.processing = false;
         this.error = 'The username or password you entered was incorrect.';
       }
     },

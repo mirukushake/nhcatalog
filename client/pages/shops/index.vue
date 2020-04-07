@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  name: 'Shops',
+  name: 'ShopsList',
   data: () => ({
     search: '',
     loading: false,
