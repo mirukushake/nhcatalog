@@ -94,3 +94,5 @@ sw.*
 .theia
 adminsdk.json
 /client/static/images
+/server/test
+/client/test

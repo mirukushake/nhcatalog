@@ -6,7 +6,7 @@ async function listShops (ctx) {
 
   const shops = await Shop.query()
     .modify('setLocale', 'shop_names', 'shop_id', 'shops.id', language, subtitle)
-    .select('id', 'slug', 'is_unlock');
+    .select('id', 'slug', 'is_unlock').orderByRaw('lower(name.name)');
 
   if (shops) {
     ctx.set('Cache-Control', 'max-age=3600');
@@ -23,13 +23,13 @@ async function listShops (ctx) {
 // list all items in a shop
 async function singleShop (ctx) {
   const { language, subtitle } = ctx.state;
-  const shopId = ctx.params.id;
+  const slug = ctx.params.slug;
 
   const shop = await Shop.query()
-    .findById(shopId)
+    .findOne({ slug })
     .modify('setLocale', 'shop_names', 'shop_id', 'shops.id', language, subtitle)
     .select('id', 'slug')
-    .withGraphFetched('items(locale, currency, selection, category)')
+    .withGraphFetched('items(locale, currency, selection, category).variations')
     .modifiers({
       locale (builder) {
         builder.modify('setLocale', 'item_names', 'item_id', 'shop_items.item_id', language, subtitle);
@@ -44,7 +44,7 @@ async function singleShop (ctx) {
       currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
-    });
+    }).orderByRaw('lower(name.name)');
 
   if (shop) {
     ctx.set('Cache-Control', 'max-age=3600');

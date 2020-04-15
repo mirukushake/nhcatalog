@@ -93,16 +93,18 @@
       </template>
       <template v-slot:item.shop[0].price="{ item }">
         <div v-if="item.shop.length">
-          <span v-for="shop in item.shop" :key="shop.id">
-            {{ shop.price }} {{ shop.currency_name }}
+          <span>
+            {{ item.shop[0].price }} {{ item.shop[0].currency_name }}
           </span>
         </div>
       </template>
       <template v-slot:item.obtained="{ item }">
         <div v-if="item.shop.length">
-          <span v-for="shop in item.shop" :key="shop.id">
-            {{ shop.name }}
-          </span>
+          <div v-for="shop in item.shop" :key="shop.id">
+            <nuxt-link :to="`/shops/${shop.slug}`">
+              {{ shop.name }}
+            </nuxt-link>
+          </div>
         </div>
         <div v-if="item.recipes.length > 0">
           <span>

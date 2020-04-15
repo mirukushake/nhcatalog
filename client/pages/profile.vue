@@ -2,11 +2,14 @@
   <div class="container">
     <div>
       <h1 class="display-1 info--text">
-        My Lists
+        My Profile
       </h1>
       <section>
         <v-row>
           <v-col cols="12" sm="6">
+            <h2 class="headline primary--text">
+              My Lists
+            </h2>
             <v-alert
               v-if="message"
               class="mt-2"
@@ -27,38 +30,8 @@
             >
               {{ error }}
             </v-alert>
+
             <v-list>
-              <v-dialog v-model="newDialog" persistent max-width="600px">
-                <template v-slot:activator="{ on }">
-                  <v-btn depressed color="primary" v-on="on">
-                    New List
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">New List</span>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-container>
-                      <v-row>
-                        <v-col cols="12">
-                          <v-text-field v-model="newTitle" label="Title" required />
-                          <v-checkbox v-model="isCompletion" :disabled="noCompletion" label="Completion checklist" />
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer />
-                    <v-btn text @click="closeDialog">
-                      Close
-                    </v-btn>
-                    <v-btn color="success" text :loading="processing" @click="createList">
-                      Save
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
               <v-list-item
                 v-for="(list, i) in lists"
                 :key="i"
@@ -66,9 +39,11 @@
                 <v-list-item-icon>
                   <v-tooltip v-if="list.completion === true" top>
                     <template v-slot:activator="{ on }">
-                      <v-icon v-on="on">
-                        mdi-check
-                      </v-icon>
+                      <v-btn small icon to="/completion" v-on="on">
+                        <v-icon>
+                          mdi-check
+                        </v-icon>
+                      </v-btn>
                     </template>
                     <span>Completion</span>
                   </v-tooltip>
@@ -90,6 +65,56 @@
                 </v-list-item-action>
               </v-list-item>
             </v-list>
+            <div>
+              <v-dialog v-model="newDialog" persistent max-width="600px">
+                <template v-slot:activator="{ on }">
+                  <v-btn depressed color="primary" v-on="on">
+                    New List
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">New List</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col cols="12">
+                          <v-alert
+                            v-if="dialogError"
+                            class="mt-2"
+                            dense
+                            type="error"
+                            transition="scale-transition"
+                            dismissible
+                          >
+                            {{ dialogError }}
+                          </v-alert>
+                          <v-text-field
+                            v-model="newTitle"
+                            label="Title"
+                            required
+                            :error-messages="newTitleErrors"
+                            @input="$v.newTitle.$touch()"
+                            @blur="$v.newTitle.$touch()"
+                          />
+                          <v-checkbox v-model="isCompletion" :disabled="noCompletion" label="Completion checklist" />
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer />
+                    <v-btn text @click="closeDialog">
+                      Close
+                    </v-btn>
+                    <v-btn color="success" text :loading="processing" @click="createList">
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </div>
             <v-dialog v-model="editDialog" persistent max-width="600px">
               <v-card>
                 <v-card-title>
@@ -112,7 +137,24 @@
                   <v-container>
                     <v-row>
                       <v-col cols="12">
-                        <v-text-field v-model="editTitle.title" label="Title" required />
+                        <v-alert
+                          v-if="dialogError"
+                          class="mt-2"
+                          dense
+                          type="error"
+                          transition="scale-transition"
+                          dismissible
+                        >
+                          {{ dialogError }}
+                        </v-alert>
+                        <v-text-field
+                          v-model="editTitle.title"
+                          label="Title"
+                          required
+                          :error-messages="editTitleErrors"
+                          @input="$v.editTitle.$touch()"
+                          @blur="$v.editTitle.$touch()"
+                        />
                       </v-col>
                     </v-row>
                   </v-container>
@@ -136,15 +178,23 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate';
+import { required } from 'vuelidate/lib/validators';
 export default {
   name: 'MyLists',
   middleware: 'auth',
+  mixins: [validationMixin],
+  validations: {
+    newTitle: { required },
+    editTitle: { required },
+  },
   data: () => ({
     newDialog: false,
     editDialog: false,
     newTitle: null,
     editTitle: {},
     error: null,
+    dialogError: null,
     message: null,
     processing: false,
     confirm: false,
@@ -167,24 +217,28 @@ export default {
         return false;
       }
     },
+    newTitleErrors () {
+      const errors = [];
+      if (!this.$v.newTitle.$dirty) { return errors; }
+      !this.$v.newTitle.required && errors.push('Title is required.');
+      return errors;
+    },
+    editTitleErrors () {
+      const errors = [];
+      if (!this.$v.editTitle.$dirty) { return errors; }
+      !this.$v.editTitle.required && errors.push('Title is required.');
+      return errors;
+    },
   },
   mounted () {
-    // this.getLists();
   },
   methods: {
-    // async getLists () {
-    //   try {
-    //     const { data } = await this.$axios.get('/user/lists');
-    //     this.lists = data.lists;
-    //   } catch (err) {
-    //     this.err = 'Could not get your lists.';
-    //   }
-    // },
     closeDialog () {
       this.newDialog = false;
       this.editDialog = false;
       this.newTitle = null;
       this.editTitle = {};
+      this.dialogError = null;
     },
     getListInfo (list) {
       this.editTitle = { ...list };
@@ -201,7 +255,7 @@ export default {
         this.newDialog = false;
       } catch (err) {
         this.processing = false;
-        this.err = 'Could not create list.';
+        this.dialogError = 'Could not create list.';
       }
     },
     async editList () {
@@ -215,7 +269,7 @@ export default {
         this.editDialog = false;
       } catch (err) {
         this.processing = false;
-        this.err = 'Could not edit list.';
+        this.dialogError = 'Could not edit list.';
       }
     },
     async deleteList () {
@@ -229,7 +283,7 @@ export default {
         this.editDialog = false;
       } catch (err) {
         this.processing = false;
-        this.err = 'Could not delete list.';
+        this.dialogError = 'Could not delete list.';
       }
     },
   },

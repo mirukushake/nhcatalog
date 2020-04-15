@@ -8,6 +8,7 @@ async function listAnimals (ctx) {
     .skipUndefined()
     .modify('setLocale', 'animal_names', 'animal_id', 'animals.id', language, subtitle)
     .select('animals.id as id', 'animals.slug as slug', 'birthday', 'image_url')
+    .whereNotNull('image_url')
     .modify(function (qb) {
       if (type === 'villager') {
         qb.where('is_npc', false)

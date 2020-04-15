@@ -1,5 +1,6 @@
 const router = require('koa-joi-router');
 const ctrl = require('../../controllers/auth');
+const schema = require('../../schemas/users');
 const authenticated = require('../../middleware/auth');
 
 const auth = router();
@@ -9,6 +10,7 @@ auth.route({
   path: '/auth/register',
   validate: {
     type: 'json',
+    body: schema.registerSchema,
     continueOnError: true,
   },
   handler: ctrl.register,
@@ -19,6 +21,7 @@ auth.route({
   path: '/auth/login',
   validate: {
     type: 'json',
+    body: schema.loginSchema,
     continueOnError: true,
   },
   handler: ctrl.login,

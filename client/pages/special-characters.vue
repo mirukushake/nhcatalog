@@ -27,9 +27,13 @@
             />
           </v-toolbar>
         </template>
-        <template v-slot:item.image="{ item }">
-          <v-avatar color="secondary" dark class="my-2">
-            <v-icon>{{ item.image }}</v-icon>
+        <template v-slot:item.image_url="{ item }">
+          <v-avatar dark class="my-2">
+            <v-img
+              alt="item.name"
+              max-width="50"
+              :src="`${img_url}/animals/${item.image_url}`"
+            />
           </v-avatar>
         </template>
         <template v-slot:item.name="{ item }">
@@ -58,15 +62,17 @@ export default {
     search: '',
     loading: false,
     characters: [],
+    img_url: process.env.IMG_URL,
   }),
   computed: {
     headers () {
       return [
-        { text: '', value: 'image', sortable: false },
+        { text: '', value: 'image_url', sortable: false, width: 100 },
         { text: this.$t('headers.animal_name'), value: 'name' },
         { text: this.$t('headers.birthday'), value: 'birthday' },
       ];
     },
+
   },
   mounted () {
     this.getData();

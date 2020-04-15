@@ -172,7 +172,7 @@ export default {
       }
     },
     getImageUrl (array) {
-      const url = array.find(f => f.is_first === true).image_url;
+      const url = array[0].image_url;
       return url;
     },
     toggleExpand () {

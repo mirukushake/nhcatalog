@@ -7,8 +7,10 @@
       <!-- <h1 class="title grey--text text--darken-2">
       </h1> -->
     </div>
-    <section>
-      {{ loggedInUser.lists }}
+    <section class="mt-8">
+      <p>Welcome to atsumare.info, a multilingual wishlist sharing and catalog completion tracking site.</p>
+
+      <p>This site is very much a work in progress, and your help would be greatly appreciated! You can submit an issue on the site's Github page if you find any incorect info or bugs, or have any information or contributions to add!</p>
     </section>
   </div>
 </template>

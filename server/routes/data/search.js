@@ -1,7 +1,7 @@
 const router = require('koa-joi-router');
 // const Joi = router.Joi;
 const ctrl = require('../../controllers/search');
-// const schema = require('../../schemas/categories');
+const schema = require('../../schemas/search');
 const { getParams } = require('../../middleware/getParams');
 
 const search = router();
@@ -11,11 +11,11 @@ search.route({
   path: '/search',
   validate: {
     continueOnError: true,
-    output: {
-      // 200: {
-      //   body: schema.categorySchema,
-      // },
-    },
+    // output: {
+    //   200: {
+    //     body: schema.searchSchema,
+    //   },
+    // },
   },
   handler: [getParams, ctrl.search],
 });

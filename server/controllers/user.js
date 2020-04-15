@@ -124,6 +124,7 @@ async function getSingleList (ctx) {
         joinItem (builder) {
           builder.joinRelated('item')
             .select('item_variations.*')
+            .modify('catName', 'item', language)
             .modify('setLocale', 'item_names', 'item_id', 'item_variations.item_id', language, subtitle).orderBy('name');
         },
       });
@@ -134,9 +135,9 @@ async function getSingleList (ctx) {
 
     const items = groupBy(listItems[0].variations, 'item_id');
     const result = map(items, (item) => {
-      const { item_id, name, subtitle } = item[0];
+      const { item_id, name, subtitle, cat_name } = item[0];
       const variations = map(item, variation => pick(variation, ['id', 'image_url', 'color_id']));
-      return { item_id, name, subtitle, variations };
+      return { item_id, name, subtitle, cat_name, variations };
     });
 
     listItems[0].variations = result;
@@ -178,7 +179,7 @@ async function getCompletionList (ctx) {
           .where('list_id', checkComplete[0].id)
           .groupBy('items.id');
       }).select('items.id', 'slug', 'cat_id', 'completed.id as completed_id')
-      .select(raw('count::int4, total_count.total_count::int4, coalesce(round((count * 100.0) / total_count.total_count, 1)::int4, 0) as percent'))
+      .select(raw('coalesce(count, count, 0)::int4 as count, total_count.total_count::int4, coalesce(round((count * 100.0) / total_count.total_count, 1)::int4, 0) as percent'))
       .from('items')
       .whereNotIn('cat_id', [18, 20, 29, 30, 31, 32])
       .leftJoin('completed', 'completed.id', 'items.id')
@@ -186,7 +187,22 @@ async function getCompletionList (ctx) {
       .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
       .whereNot('total_count.total_count', 0).orderBy('name');
 
-    if (!listItems) {
+    const basicListItems = await List.query()
+      .with('completed', (qb) => {
+        qb.select(raw('items.id, case when count(variation_id) > 0 then 1 end as count'))
+          .from('userdata.list_items')
+          .join('item_variations', 'variation_id', 'item_variations.id')
+          .join('items', 'item_id', 'items.id')
+          .where('list_id', checkComplete[0].id)
+          .groupBy('items.id');
+      }).select('items.id', 'slug', 'cat_id', 'completed.id as completed_id')
+      .select(raw('items.id, slug, cat_id, coalesce(count, count, 0)::int4 as count, 1 as total'))
+      .from('items')
+      .whereNotIn('cat_id', [18, 20, 29, 30, 31, 32])
+      .leftJoin('completed', 'completed.id', 'items.id')
+      .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle).orderBy('name');
+
+    if (!listItems || !basicListItems) {
       ctx.throw(404, 'List does not exist.');
     }
 
@@ -196,9 +212,15 @@ async function getCompletionList (ctx) {
       total: sumBy(objs, 'total_count'),
     })).value();
 
+    const basicGrouped = _(basicListItems).groupBy('cat_id').map((objs, key) => ({
+      id: key,
+      count: sumBy(objs, 'count'),
+      total: sumBy(objs, 'total'),
+    })).value();
+
     if (listItems) {
       ctx.status = 200;
-      ctx.body = { list: grouped };
+      ctx.body = { list: grouped, basicList: basicGrouped };
     } else {
       ctx.throw(404, 'Could not find any lists for this user.');
     }

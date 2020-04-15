@@ -23,7 +23,7 @@
         single-line
         filled
         rounded
-        class="mt-6 hidden-sm-and-down"
+        class="mt-7 hidden-sm-and-down"
         return-object
       >
         <template v-slot:item="{ item }">
@@ -36,17 +36,18 @@
       <v-spacer />
       <template v-if="$vuetify.breakpoint.smAndDown" v-slot:extension>
         <v-autocomplete
-          v-model="search"
-          :items="items"
-          :loading="isLoading"
+          v-model="selected"
+          :items="searchResults"
+          :loading="progress"
           :search-input.sync="search"
           prepend-inner-icon="mdi-magnify"
+          item-text="name"
           label="Search for an item"
           single-line
           filled
           rounded
-          class="mt-2"
-          dense
+          class="mt-4"
+          return-object
         />
       </template>
       <v-btn
@@ -82,7 +83,7 @@
         <v-icon class="hidden-sm-and-up">
           mdi-format-list-bulleted
         </v-icon>
-        <span class="hidden-sm-and-down">My Lists</span>
+        <span class="hidden-sm-and-down">Profile</span>
       </v-btn>
 
       <v-btn
@@ -146,6 +147,7 @@
 
 <script>
 export default {
+  name: 'DefaultLayout',
   data: () => (
     {
       drawer: null,
@@ -185,7 +187,7 @@ export default {
   },
   watch: {
     search (val) {
-      val && val.length > 2 && val !== this.selected && this.getSearch(val);
+      val && val.length > 1 && val !== this.selected && this.getSearch(val);
     },
     selected (val) {
       this.$router.push({ path: `/${val.slug}`, query: { search: val.name } });

@@ -142,7 +142,7 @@ export default {
 
         if (!this.$v.$invalid) {
           this.processing = true;
-          const userinfo = { username: this.username, password: this.password };
+          const userinfo = { username: this.username, password: this.password, businessCat: this.businessCat };
           await this.$axios.post('/auth/register', userinfo);
           this.message = 'Your account was created! ';
           await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });

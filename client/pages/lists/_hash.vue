@@ -48,6 +48,9 @@
               {{ item.subtitle }}
             </div>
           </template>
+          <template v-slot:item.cat_name="{ item }">
+            {{ item.cat_name }}
+          </template>
           <template v-slot:item.variations="{ item }">
             <template v-if="isLoggedIn">
               <v-item-group
@@ -128,6 +131,7 @@ export default {
     headers () {
       return [
         { text: this.$t('headers.item_name'), value: 'name' },
+        { text: this.$t('headers.category'), value: 'cat_name' },
         { text: '', value: 'variations', sortable: false },
       ];
     },

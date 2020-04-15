@@ -10,7 +10,7 @@ async function listItems (ctx) {
     .joinRelated('category')
     .where('is_item', true)
     .modify('catName', 'items', language)
-    .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade')
+    .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade', 'is_event')
     .orderBy('name.name')
     .withGraphFetched('[variations, shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
@@ -41,7 +41,7 @@ async function listItems (ctx) {
       currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
-    });
+    }).orderByRaw('lower(name.name)');
 
   if (items) {
     ctx.set('Cache-Control', 'max-age=3600');
@@ -65,7 +65,7 @@ async function listCatItems (ctx) {
     .joinRelated('category')
     .where('is_item', true).andWhere('items.cat_id', id)
     .modify('catName', 'items', language)
-    .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade')
+    .select('items.cat_id', 'size', 'sell_price', 'is_reorder', 'is_remake', 'is_trade', 'is_event')
     .withGraphFetched('[variations, shop(locale, currency, selection), recipes(recipeLocale, recipeInfo).materials(matLocale, info), used_in(usedLocale, usedInfo)]')
     .modifiers({
       locale (builder) {
@@ -95,7 +95,7 @@ async function listCatItems (ctx) {
       currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
-    });
+    }).orderByRaw('lower(name.name)');
 
   if (items) {
     ctx.set('Cache-Control', 'max-age=3600');
