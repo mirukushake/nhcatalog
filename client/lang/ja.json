@@ -10,7 +10,8 @@
     "login": "ログイン",
     "register": "新規登録",
     "logout": "ログアウト",
-    "settings": "設定"
+    "settings": "設定",
+    "profile": "マイページ"
   },
    "headers": {
     "item_name": "アイテム",

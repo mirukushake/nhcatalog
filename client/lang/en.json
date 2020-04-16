@@ -10,7 +10,8 @@
     "login": "Log in",
     "register": "Register",
     "logout": "Log out",
-    "settings": "Settings"
+    "settings": "Settings",
+    "profile": "Profile"
   },
   "headers": {
     "item_name": "Item",

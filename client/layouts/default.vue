@@ -83,7 +83,7 @@
         <v-icon class="hidden-sm-and-up">
           mdi-format-list-bulleted
         </v-icon>
-        <span class="hidden-sm-and-down">Profile</span>
+        <span class="hidden-sm-and-down">{{ $t('meta.profile') }}</span>
       </v-btn>
 
       <v-btn
@@ -142,6 +142,30 @@
         <nuxt />
       </v-container>
     </v-content>
+    <v-footer
+      color="primary"
+      app
+    >
+      <v-row justify="center">
+        <v-btn
+          text
+          small
+          to="/privacy"
+          dark
+        >
+          Privacy Policy
+        </v-btn>
+        <v-btn
+          text
+          small
+          href="https://github.com/mirukushake/atsumareinfo/"
+          target="_blank"
+          dark
+        >
+          Github
+        </v-btn>
+      </v-row>
+    </v-footer>
   </v-app>
 </template>
 
@@ -174,7 +198,7 @@ export default {
               { title: this.$t('menu.villagers'), name: 'villagers' },
               { title: this.$t('menu.special_characters'), name: 'special-characters' },
               { title: this.$t('menu.shops'), name: 'shops' },
-              { title: this.$t('menu.recipes'), name: 'recipes' },
+              // { title: this.$t('menu.recipes'), name: 'recipes' },
             ],
           },
         ].concat(this.linkData);

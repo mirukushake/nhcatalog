@@ -1,6 +1,7 @@
-# atsumareinfo (temp name)
+# NH Catalog
 
-> My phenomenal Nuxt.js project
+A website to track your Animal Crossing New Horizons catalog completion and share wishlists in multiple languages.
+It was built with love ~~and many tears~~ in nuxt.js and koa.
 
 ## Build Setup
 

@@ -53,6 +53,14 @@
               @blur="$v.confirmPassword.$touch()"
             />
             <v-text-field
+              v-model="inviteCode"
+              :error-messages="inviteCodeErrors"
+              label="Invite Code"
+              required
+              @input="$v.inviteCode.$touch()"
+              @blur="$v.inviteCode.$touch()"
+            />
+            <v-text-field
               v-model="businessCat"
               style="display: none;"
             />
@@ -92,12 +100,14 @@ export default {
     username: { required, alphaNum, minLength: minLength(5) },
     password: { required, passStrength },
     confirmPassword: { required, sameAs: sameAs(function () { return this.password; }) },
+    inviteCode: { required, alphaNum },
   },
   data: () => ({
     error: null,
     username: null,
     password: null,
     confirmPassword: null,
+    inviteCode: null,
     businessCat: null,
     message: null,
     processing: false,
@@ -128,6 +138,13 @@ export default {
       !this.$v.confirmPassword.sameAs && errors.push('Does not match password.');
       return errors;
     },
+    inviteCodeErrors () {
+      const errors = [];
+      if (!this.$v.inviteCode.$dirty) { return errors; }
+      !this.$v.inviteCode.required && errors.push('Invite code is required');
+      !this.$v.inviteCode.alphaNum && errors.push('Username must contain only letters and numbers.');
+      return errors;
+    },
   },
   methods: {
     reset () {
@@ -135,6 +152,7 @@ export default {
       this.password = '';
       this.confirmPassword = '';
       this.username = '';
+      this.inviteCode = '';
     },
     async register () {
       try {
@@ -142,7 +160,7 @@ export default {
 
         if (!this.$v.$invalid) {
           this.processing = true;
-          const userinfo = { username: this.username, password: this.password, businessCat: this.businessCat };
+          const userinfo = { username: this.username, password: this.password, businessCat: this.businessCat, inviteCode: this.inviteCode };
           await this.$axios.post('/auth/register', userinfo);
           this.message = 'Your account was created! ';
           await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });

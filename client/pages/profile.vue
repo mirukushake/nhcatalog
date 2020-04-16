@@ -2,7 +2,7 @@
   <div class="container">
     <div>
       <h1 class="display-1 info--text">
-        My Profile
+        Welcome, {{ loggedInUser.username }}!
       </h1>
       <section>
         <v-row>
