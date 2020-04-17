@@ -14,7 +14,7 @@ async function search (ctx) {
       .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
       .modify('catName', 'items', language)
       .select('category.slug')
-      .orderByRaw('lower(name.name)');
+      .orderByRaw('lower(name.name) collate "ja-x-icu"');
 
     // const recipes = await Recipe.query()
     // .where('name.name', 'like', `%${string}%`)

@@ -1,10 +1,15 @@
-export const getters = {
-  isAuthenticated (state) {
-    return state.auth.loggedIn;
-  },
+export const state = () => ({
+  lists: [],
+});
 
-  loggedInUser (state) {
-    return state.auth.user;
+export const mutations = {
+  setLists (state, list) {
+    state.lists = list;
   },
-}
-;
+};
+
+export const actions = {
+  changeLists (context, payload) {
+    context.commit('setLists', payload);
+  },
+};

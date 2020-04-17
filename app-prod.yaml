@@ -1,0 +1,18 @@
+runtime: nodejs10
+service: default
+
+handlers:
+  - url: /_nuxt
+    static_dir: .nuxt/dist/client
+    secure: always
+
+  - url: /favicon.ico
+    static_files: client/static/favicon.ico
+    upload: client/static/favicon.ico
+
+  - url: /.*
+    script: auto
+    secure: always
+
+includes:
+  - prod_env.yaml

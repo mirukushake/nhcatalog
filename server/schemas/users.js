@@ -4,6 +4,7 @@ const Joi = router.Joi;
 const registerSchema = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().required(),
+  inviteCode: Joi.string().required(),
   businessCat: Joi.any(),
 });
 

@@ -106,7 +106,6 @@ export default {
           this.processing = true;
           await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });
           this.processing = false;
-          this.$router.go(-1);
         }
       } catch (err) {
         this.processing = false;

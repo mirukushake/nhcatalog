@@ -1,9 +1,10 @@
+const envPath = `.env.${process.env.ENV || 'local'}`;
 require('dotenv').config();
 
 export default {
   mode: 'universal',
   server: {
-    port: 5000, // default: 3000
+    port: process.env.PORT || 5000, // default: 3000
     host: '0.0.0.0', // default: localhost
   },
   srcDir: 'client/',
@@ -48,13 +49,7 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify',
-    ['@nuxtjs/google-analytics', {
-      id: 'G-EQDZSVR2HF',
-      debug: {
-        enabled: true,
-        sendHitTask: true,
-      },
-    }],
+    ['@nuxtjs/dotenv', { path: process.cwd(), filename: envPath }],
   ],
   /*
   ** Nuxt.js modules
@@ -104,7 +99,6 @@ export default {
     '@nuxtjs/proxy',
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv',
     '@nuxtjs/auth',
   ],
   /*
@@ -112,12 +106,11 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: 'http://localhost:8081',
   },
 
-  proxy: {
-    '/api/': { target: 'http://localhost:8081', pathRewrite: { '^/api/': '' } },
-  },
+  // proxy: {
+  //   '/api/': { target: process.env.API_URL, pathRewrite: { '^/api/': '' } },
+  // },
 
   auth: {
     strategies: {
@@ -128,7 +121,11 @@ export default {
           logout: false,
         },
       },
-      redirect: false,
+      redirect: {
+        login: '/login',
+        logout: '/',
+        home: '/profile',
+      },
     },
   },
 
@@ -154,6 +151,7 @@ export default {
   ** Build configuration
   */
   build: {
+    extractCSS: true,
     /*
     ** You can extend webpack config here
     */

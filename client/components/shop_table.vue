@@ -73,8 +73,8 @@
         </template>
         <template v-else>
           <div class="d-flex justify-center flex-wrap">
-            <span v-for="variation in item.variations" :key="variation.id" class="mr-4">
-              <v-avatar dark class="my-2">
+            <span v-for="(variation, index) in item.variations" :key="variation.id" class="mr-4">
+              <v-avatar v-if="index === 0 || expanded.includes(item.id)" dark class="my-2">
                 <v-img
                   alt="item.name"
                   max-width="50"

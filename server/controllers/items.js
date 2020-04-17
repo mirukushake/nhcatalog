@@ -41,7 +41,7 @@ async function listItems (ctx) {
       currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
-    }).orderByRaw('lower(name.name)');
+    }).orderByRaw('lower(name.name) collate "ja-x-icu"');
 
   if (items) {
     ctx.set('Cache-Control', 'max-age=3600');
@@ -95,7 +95,7 @@ async function listCatItems (ctx) {
       currency (builder) {
         builder.modify('currencyName', 'shop_items', language);
       },
-    }).orderByRaw('lower(name.name)');
+    }).orderByRaw('lower(name.name) collate "ja-x-icu"');
 
   if (items) {
     ctx.set('Cache-Control', 'max-age=3600');

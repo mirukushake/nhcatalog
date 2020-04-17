@@ -1,0 +1,8 @@
+runtime: nodejs10
+
+service: api
+
+entrypoint: node server/index.js
+
+includes:
+  - prod_env.yaml

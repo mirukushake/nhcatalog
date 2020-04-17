@@ -14,11 +14,7 @@ async function getUser (ctx) {
   try {
     const userid = await ctx.request.jwtPayload.sub;
 
-    const userInfo = await User.query().findById(userid).select('id', 'username', 'site_settings').withGraphFetched('lists(order)').modifiers({
-      order: (builder) => {
-        builder.orderBy('title');
-      },
-    });
+    const userInfo = await User.query().findById(userid).select('id', 'username', 'site_settings');
 
     if (userInfo) {
       ctx.status = 200;
@@ -42,7 +38,9 @@ async function createList (ctx) {
     const newList = await List.query().insert({ hashid, user_id: userid, title, completion }).returning('*');
 
     if (newList) {
+      const allLists = await List.query().where({ user_id: userid }).orderByRaw('lower(title) collate "ja-x-icu"');
       ctx.status = 201;
+      ctx.body = { lists: allLists };
     } else {
       ctx.throw(409, 'The list could not be created');
     }
@@ -56,7 +54,7 @@ async function getLists (ctx) {
   try {
     const userid = await ctx.request.jwtPayload.sub;
 
-    const allLists = await List.query().where({ user_id: userid }).orderBy('title');
+    const allLists = await List.query().where({ user_id: userid }).orderByRaw('lower(title) collate "ja-x-icu"');
 
     if (allLists) {
       ctx.status = 200;
@@ -99,7 +97,9 @@ async function editList (ctx) {
         .patch({ title }).returning('*');
 
       if (updatedList) {
+        const allLists = await List.query().where({ user_id: userid }).orderByRaw('lower(title) collate "ja-x-icu"');
         ctx.status = 200;
+        ctx.body = { lists: allLists };
       } else {
         ctx.throw(409, 'The list could not be updated.');
       }
@@ -125,7 +125,7 @@ async function getSingleList (ctx) {
           builder.joinRelated('item')
             .select('item_variations.*')
             .modify('catName', 'item', language)
-            .modify('setLocale', 'item_names', 'item_id', 'item_variations.item_id', language, subtitle).orderBy('name');
+            .modify('setLocale', 'item_names', 'item_id', 'item_variations.item_id', language, subtitle).orderByRaw('lower(name.name) collate "ja-x-icu"');
         },
       });
 
@@ -185,7 +185,7 @@ async function getCompletionList (ctx) {
       .leftJoin('completed', 'completed.id', 'items.id')
       .leftJoin('total_count', 'items.id', 'total_count.id')
       .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
-      .whereNot('total_count.total_count', 0).orderBy('name');
+      .whereNot('total_count.total_count', 0).orderByRaw('lower(name.name)');
 
     const basicListItems = await List.query()
       .with('completed', (qb) => {
@@ -200,7 +200,7 @@ async function getCompletionList (ctx) {
       .from('items')
       .whereNotIn('cat_id', [18, 20, 29, 30, 31, 32])
       .leftJoin('completed', 'completed.id', 'items.id')
-      .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle).orderBy('name');
+      .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle).orderByRaw('lower(name.name) collate "ja-x-icu"');
 
     if (!listItems || !basicListItems) {
       ctx.throw(404, 'List does not exist.');
@@ -233,14 +233,28 @@ async function getCompletionList (ctx) {
 async function deleteList (ctx) {
   try {
     if (ctx.request.body) {
+      const { language, subtitle } = ctx.state;
       const listid = ctx.request.body.deletedItems.listid;
       const items = ctx.request.body.deletedItems.items;
 
       const deleted = await List.relatedQuery('variations').for(listid).unrelate().whereIn('variation_id', items);
 
       if (deleted) {
+        const listItems = await List.query()
+          .where('id', listid)
+          .joinRelated('user')
+          .select('lists.id as list_id', 'lists.*', 'username')
+          .withGraphFetched('variations(joinItem)')
+          .modifiers({
+            joinItem (builder) {
+              builder.joinRelated('item')
+                .select('item_variations.*')
+                .modify('catName', 'item', language)
+                .modify('setLocale', 'item_names', 'item_id', 'item_variations.item_id', language, subtitle).orderByRaw('lower(name.name) collate "ja-x-icu"');
+            },
+          });
         ctx.status = 200;
-        ctx.body = { deleted };
+        ctx.body = { list: listItems };
       }
     } else {
       const userid = await ctx.request.jwtPayload.sub;
@@ -249,10 +263,12 @@ async function deleteList (ctx) {
       const deletedList = await List.query().skipUndefined()
         .delete()
         .where('id', listid)
-        .andWhere('user_id', userid);
+        .andWhere('user_id', userid).returning('*');
 
       if (deletedList) {
+        const allLists = await List.query().where({ user_id: userid }).orderByRaw('lower(title) collate "ja-x-icu"');
         ctx.status = 204;
+        ctx.body = { lists: allLists || [] };
       } else {
         ctx.throw(409, 'The list could not be deleted.');
       }

@@ -165,7 +165,7 @@ export default {
           this.message = 'Your account was created! ';
           await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });
           this.processing = false;
-          setTimeout(() => this.$router.push({ path: '/settings' }), 2000);
+          await this.$router.push({ path: '/profile' });
         }
       } catch (err) {
         this.processing = false;

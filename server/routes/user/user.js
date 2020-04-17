@@ -34,7 +34,7 @@ user.route({
     type: 'json',
     continueOnError: true,
   },
-  handler: [authenticated, ctrl.deleteList],
+  handler: [authenticated, getParams, ctrl.deleteList],
 });
 
 user.route({

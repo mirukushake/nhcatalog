@@ -208,13 +208,13 @@ export default {
       return this.$store.state.auth.user;
     },
     lists () {
-      return this.$store.state.auth.user.lists;
+      return this.$store.state.user.lists;
     },
     noCompletion () {
-      if (this.lists.filter(c => c.completion === true)) {
-        return true;
-      } else {
+      if (this.lists.length === 0 || !this.lists.filter(c => c.completion === true)) {
         return false;
+      } else {
+        return true;
       }
     },
     newTitleErrors () {
@@ -231,8 +231,26 @@ export default {
     },
   },
   mounted () {
+    this.getLists();
   },
   methods: {
+    async getLists () {
+      try {
+        this.processing = true;
+        const lists = await this.$axios.get('/user/lists');
+        if (lists) {
+          await this.$store.dispatch('user/changeLists', lists.data.lists);
+          this.processing = false;
+        } else {
+          this.processing = false;
+          this.dialogError = 'Could not retrieve lists.';
+        }
+      } catch (err) {
+        this.processing = false;
+        this.dialogError = 'Could not retrieve lists.';
+      }
+    },
+
     closeDialog () {
       this.newDialog = false;
       this.editDialog = false;
@@ -247,12 +265,13 @@ export default {
     async createList () {
       try {
         this.processing = true;
-        await this.$axios.post('/user/lists', { title: this.newTitle, completion: this.isCompletion });
-        await this.$auth.fetchUser();
+        const created = await this.$axios.post('/user/lists', { title: this.newTitle, completion: this.isCompletion });
+        await this.$store.dispatch('user/changeLists', created.data.lists);
         this.processing = false;
         this.message = 'List created!';
         this.newTitle = null;
         this.newDialog = false;
+        this.isCompletion = null;
       } catch (err) {
         this.processing = false;
         this.dialogError = 'Could not create list.';
@@ -261,8 +280,8 @@ export default {
     async editList () {
       try {
         this.processing = true;
-        await this.$axios.patch(`/user/lists/${this.editTitle.id}`, { title: this.editTitle.title });
-        await this.$auth.fetchUser();
+        const updated = await this.$axios.patch(`/user/lists/${this.editTitle.id}`, { title: this.editTitle.title });
+        await this.$store.dispatch('user/changeLists', updated.data.lists);
         this.processing = false;
         this.message = 'List edited!';
         this.editTitle = {};
@@ -275,8 +294,8 @@ export default {
     async deleteList () {
       try {
         this.processing = true;
-        await this.$axios.delete(`/user/lists/${this.editTitle.id}`);
-        await this.$auth.fetchUser();
+        const deleted = await this.$axios.delete(`/user/lists/${this.editTitle.id}`);
+        await this.$store.dispatch('user/changeLists', deleted.data.lists);
         this.processing = false;
         this.message = 'List deleted!';
         this.editTitle = {};
@@ -288,7 +307,7 @@ export default {
     },
   },
   head () {
-    return { title: 'My Lists' };
+    return { title: this.$t('meta.profile') };
   },
 };
 </script>

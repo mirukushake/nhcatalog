@@ -11,7 +11,9 @@
     "register": "Register",
     "logout": "Log out",
     "settings": "Settings",
-    "profile": "Profile"
+    "profile": "Profile",
+    "on": "On",
+    "off": "Off"
   },
   "headers": {
     "item_name": "Item",
@@ -31,13 +33,12 @@
     "time": "Time",
     "location": "Location",
     "remake": "Remake",
-    "catalog": "Catalog"
+    "catalog": "Catalog",
+    "info": "Info"
   },
   "common": {
     "unknown": "Unknown",
-    "everything": "Everything",
-    "ok": "✔︎",
-    "notok": "✖︎"
+    "everything": "Everything"
   },
   "creatures": {
     "north_hemisphere": "Northern Hemisphere",

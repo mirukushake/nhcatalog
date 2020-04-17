@@ -158,7 +158,7 @@
         <v-btn
           text
           small
-          href="https://github.com/mirukushake/atsumareinfo/"
+          href="https://github.com/mirukushake/nhcatalog/"
           target="_blank"
           dark
         >

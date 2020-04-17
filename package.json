@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
+    "build-staging": "ENV=staging nuxt build",
+    "build-production": "ENV=production nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
@@ -14,6 +16,7 @@
     "server": "nodemon server/index.js"
   },
   "dependencies": {
+    "@google-cloud/logging-bunyan": "^2.0.3",
     "@koa/cors": "^3.0.0",
     "@nuxtjs/auth": "^4.9.0",
     "@nuxtjs/axios": "^5.9.6",
@@ -22,6 +25,7 @@
     "@nuxtjs/pwa": "^3.0.0-0",
     "axios-extensions": "^3.1.2",
     "bcrypt": "^4.0.1",
+    "bunyan": "^1.8.12",
     "consola": "^2.11.3",
     "dayjs": "^1.8.23",
     "dotenv": "^8.2.0",

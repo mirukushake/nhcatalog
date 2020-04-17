@@ -26,12 +26,8 @@ export default {
     },
   },
   mounted () {
-    this.getCompletion(0);
   },
   methods: {
-    async getCompletion () {
-      await this.$auth.fetchUser();
-    },
   },
   head: () => ({
     title: 'NH Catalog',
