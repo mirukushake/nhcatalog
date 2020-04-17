@@ -7,46 +7,54 @@
     </div>
 
     <section>
-      <v-data-table
-        :headers="headers"
-        :items="characters"
-        :loading="loading"
-        :search="search"
-        :footer-props="{
-          'items-per-page-options': [20, 50, 100]
-        }"
-      >
-        <template v-slot:top>
-          <v-toolbar flat color="white">
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Search"
-              single-line
-              hide-details
-            />
-          </v-toolbar>
-        </template>
-        <template v-slot:item.image="{ item }">
-          <v-avatar color="secondary" dark class="my-2">
-            <v-icon>{{ item.image }}</v-icon>
-          </v-avatar>
-        </template>
-        <template v-slot:item.name="{ item }">
-          <div>{{ item.name }}</div>
-          <div v-if="item.subtitle" class="grey--text">
-            {{ item.subtitle }}
-          </div>
-        </template>
-        <template v-slot:item.birthday="{ item }">
-          <div v-if="item.birthday">
-            {{ $dayjs(item.birthday).format('MM/DD') }}
-          </div>
-          <div v-else>
-            {{ $t('common.unknown') }}
-          </div>
-        </template>
-      </v-data-table>
+      <v-col cols="8">
+        <v-row>
+          <v-data-table
+            :headers="headers"
+            :items="characters"
+            :loading="loading"
+            :search="search"
+            :footer-props="{
+              'items-per-page-options': [20, 50, 100]
+            }"
+          >
+            <template v-slot:top>
+              <v-toolbar flat color="white">
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="Search"
+                  single-line
+                  hide-details
+                />
+              </v-toolbar>
+            </template>
+            <template v-slot:item.image_url="{ item }">
+              <v-avatar dark class="my-2">
+                <v-img
+                  alt="item.name"
+                  max-width="50"
+                  :src="`${img_url}/animals/${item.image_url}`"
+                />
+              </v-avatar>
+            </template>
+            <template v-slot:item.name="{ item }">
+              <div>{{ item.name }}</div>
+              <div v-if="item.subtitle" class="grey--text">
+                {{ item.subtitle }}
+              </div>
+            </template>
+            <template v-slot:item.birthday="{ item }">
+              <div v-if="item.birthday">
+                {{ $dayjs(item.birthday).format('MM/DD') }}
+              </div>
+              <div v-else>
+                {{ $t('common.unknown') }}
+              </div>
+            </template>
+          </v-data-table>
+        </v-row>
+      </v-col>
     </section>
   </div>
 </template>
@@ -58,15 +66,17 @@ export default {
     search: '',
     loading: false,
     characters: [],
+    img_url: process.env.IMG_URL,
   }),
   computed: {
     headers () {
       return [
-        { text: '', value: 'image', sortable: false },
+        { text: '', value: 'image_url', sortable: false, width: 100 },
         { text: this.$t('headers.animal_name'), value: 'name' },
         { text: this.$t('headers.birthday'), value: 'birthday' },
       ];
     },
+
   },
   mounted () {
     this.getData();

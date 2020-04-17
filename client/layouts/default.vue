@@ -23,7 +23,7 @@
         single-line
         filled
         rounded
-        class="mt-6 hidden-sm-and-down"
+        class="mt-7 hidden-sm-and-down"
         return-object
       >
         <template v-slot:item="{ item }">
@@ -36,17 +36,18 @@
       <v-spacer />
       <template v-if="$vuetify.breakpoint.smAndDown" v-slot:extension>
         <v-autocomplete
-          v-model="search"
-          :items="items"
-          :loading="isLoading"
+          v-model="selected"
+          :items="searchResults"
+          :loading="progress"
           :search-input.sync="search"
           prepend-inner-icon="mdi-magnify"
+          item-text="name"
           label="Search for an item"
           single-line
           filled
           rounded
-          class="mt-2"
-          dense
+          class="mt-4"
+          return-object
         />
       </template>
       <v-btn
@@ -82,7 +83,7 @@
         <v-icon class="hidden-sm-and-up">
           mdi-format-list-bulleted
         </v-icon>
-        <span class="hidden-sm-and-down">My Lists</span>
+        <span class="hidden-sm-and-down">{{ $t('meta.profile') }}</span>
       </v-btn>
 
       <v-btn
@@ -141,11 +142,36 @@
         <nuxt />
       </v-container>
     </v-content>
+    <v-footer
+      color="primary"
+      app
+    >
+      <v-row justify="center">
+        <v-btn
+          text
+          small
+          to="/privacy"
+          dark
+        >
+          Privacy Policy
+        </v-btn>
+        <v-btn
+          text
+          small
+          href="https://github.com/mirukushake/nhcatalog/"
+          target="_blank"
+          dark
+        >
+          Github
+        </v-btn>
+      </v-row>
+    </v-footer>
   </v-app>
 </template>
 
 <script>
 export default {
+  name: 'DefaultLayout',
   data: () => (
     {
       drawer: null,
@@ -172,7 +198,7 @@ export default {
               { title: this.$t('menu.villagers'), name: 'villagers' },
               { title: this.$t('menu.special_characters'), name: 'special-characters' },
               { title: this.$t('menu.shops'), name: 'shops' },
-              { title: this.$t('menu.recipes'), name: 'recipes' },
+              // { title: this.$t('menu.recipes'), name: 'recipes' },
             ],
           },
         ].concat(this.linkData);
@@ -185,7 +211,7 @@ export default {
   },
   watch: {
     search (val) {
-      val && val.length > 2 && val !== this.selected && this.getSearch(val);
+      val && val.length > 1 && val !== this.selected && this.getSearch(val);
     },
     selected (val) {
       this.$router.push({ path: `/${val.slug}`, query: { search: val.name } });

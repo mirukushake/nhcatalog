@@ -1,6 +1,7 @@
 const router = require('koa-joi-router');
 const ctrl = require('../../controllers/user');
 const authenticated = require('../../middleware/auth');
+const schema = require('../../schemas/users');
 const { getParams } = require('../../middleware/getParams');
 
 const user = router();
@@ -10,6 +11,7 @@ user.route({
   path: '/user/lists',
   validate: {
     type: 'json',
+    body: schema.changeListSchema,
     continueOnError: true,
   },
   handler: [authenticated, ctrl.createList],
@@ -32,7 +34,7 @@ user.route({
     type: 'json',
     continueOnError: true,
   },
-  handler: [authenticated, ctrl.deleteList],
+  handler: [authenticated, getParams, ctrl.deleteList],
 });
 
 user.route({
@@ -66,31 +68,14 @@ user.route({
   method: 'get',
   path: '/user/completion',
   validate: {
+    output: {
+      200: {
+        body: schema.completionSchema,
+      },
+    },
     continueOnError: true,
   },
   handler: [getParams, authenticated, ctrl.getCompletionList],
 });
-
-// user.route({
-//   method: 'get',
-//   path: '/user/lists/:id',
-//   validate: {
-//     type: 'json',
-//     continueOnError: true,
-//   },
-//   handler: ctrl.login,
-// });
-
-// user.route({
-//   method: 'get',
-//   path: '/user',
-//   validate: {
-//     continueOnError: true,
-//   },
-//   handler: [authenticated, async (ctx) => {
-//     const userid = await ctx.request.jwtPayload.sub;
-//     ctx.body = { userid };
-//   }],
-// });
 
 module.exports = user;

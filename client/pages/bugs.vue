@@ -23,6 +23,9 @@ export default {
     pageInfo () {
       return this.$store.getters['layout/getInfo']('bugs');
     },
+    hemi () {
+      return this.$store.state.usersettings.settings.hemisphere;
+    },
   },
   methods: {
 

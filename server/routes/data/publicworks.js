@@ -9,7 +9,7 @@ const works = router();
 works.route({
   method: 'get',
   path: '/publicworks',
-  handler: [ getParams, ctrl.listWorks ],
+  handler: [getParams, ctrl.listWorks],
 });
 
 // list of public works by category

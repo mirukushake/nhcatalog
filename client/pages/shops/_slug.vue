@@ -32,7 +32,7 @@ export default {
     async getData () {
       try {
         this.loading = true;
-        const { data } = await this.$axios.get(`/shops/${this.$route.params.id}`);
+        const { data } = await this.$axios.get(`/shops/${this.$route.params.slug}`);
         this.pageTitle = data.shop.name;
         this.itemsList = data.shop.items;
         this.loading = false;

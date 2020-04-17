@@ -81,10 +81,10 @@ export default {
       return [
         { text: '', value: 'image_url', width: 100, align: 'center', sortable: false },
         { text: 'Name', value: 'name' },
-        { text: this.$t('headers.season'), value: 'seasons', sortable: false },
+        { text: `${this.$t('headers.season')} (${this.hemi === 'north' ? this.$t('creatures.north_hemisphere') : this.$t('creatures.south_hemisphere')})`, value: 'seasons', sortable: false },
         { text: this.$t('headers.time'), value: 'start_time', sortable: false },
         { text: this.$t('headers.sell_price'), value: 'sell_price' },
-        { text: this.$t('headers.location'), value: 'location', sortable: false },
+        // { text: this.$t('headers.location'), value: 'location', sortable: false },
 
       ];
     },
@@ -93,9 +93,9 @@ export default {
     },
   },
   watch: {
-    hemi () {
-      this.getData();
-    },
+    // hemi () {
+    //   this.getData();
+    // },
   },
   created () {
     this.getSearch();

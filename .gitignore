@@ -94,3 +94,11 @@ sw.*
 .theia
 adminsdk.json
 /client/static/images
+/server/test
+/client/test
+prod_env.yaml
+.env.local
+.env.production
+.env.staging
+.gcloudignore
+staging_env.yaml

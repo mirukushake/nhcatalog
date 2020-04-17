@@ -33,6 +33,7 @@ const singleShopSchema = Joi.object({
         is_reorder: Joi.boolean().allow(null),
         is_trade: Joi.boolean().allow(null),
         is_remake: Joi.boolean().allow(null),
+        variations: Joi.array(),
       }),
     ),
   }),

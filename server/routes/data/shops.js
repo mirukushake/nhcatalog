@@ -21,7 +21,7 @@ shops.route({
 
 shops.route({
   method: 'get',
-  path: '/shops/:id',
+  path: '/shops/:slug',
   validate: {
     continueOnError: true,
     output: {

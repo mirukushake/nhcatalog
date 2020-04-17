@@ -57,8 +57,8 @@
                 <v-divider class="mb-4" />
                 <span class="font-weight-black">Subtitles</span>
                 <v-radio-group v-model="newSettings.subtitle" row>
-                  <v-radio label="On" :value="true" />
-                  <v-radio label="Off" :value="false" />
+                  <v-radio :label="$t('meta.on') " :value="true" />
+                  <v-radio :label="$t('meta.off') " :value="false" />
                 </v-radio-group>
                 <v-btn depressed class="mr-4 mt-4" color="success" :loading="processing" @click="updateSettings">
                   Save
@@ -189,7 +189,7 @@ export default {
         this.getLocale();
         this.processing = false;
         this.message = 'Your settings have been saved!';
-        setTimeout(() => this.$router.go({ path: this.$router.currentRoute.path, force: true }), 2000);
+        this.$router.go({ path: this.$router.currentRoute.path, force: true });
       } catch (err) {
         this.processing = false;
         this.error = 'There was a problem saving your settings.';

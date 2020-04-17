@@ -1,0 +1,7 @@
+runtime: nodejs10
+service: staging-api
+
+entrypoint: node server/index.js
+
+includes:
+  - staging_env.yaml

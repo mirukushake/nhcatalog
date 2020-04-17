@@ -4,11 +4,16 @@
       Catalog Completion
     </h1>
     <section class="mt-4">
+      <v-radio-group v-model="mode" row>
+        <v-radio label="Normal mode" value="normal" />
+        <v-radio label="Basic mode" value="basic" />
+      </v-radio-group>
       <template v-for="cat in newData">
         <v-card :key="cat.id" flat>
           <v-card-title>
             <span>{{ cat.title }}</span>
           </v-card-title>
+
           <v-row>
             <v-col v-for="child in cat.children" :key="child.id" cols="3">
               {{ child.title }}
@@ -42,6 +47,8 @@ export default {
   middleware: 'auth',
   data: () => ({
     listinfo: [],
+    basicListinfo: [],
+    mode: 'normal',
     search: '',
     loading: false,
     processing: false,
@@ -56,7 +63,7 @@ export default {
       return [...this.$store.state.layout.menuItems.filter(remove => !remove.slug.includes('bugs') && !remove.slug.includes('fish'))];
     },
     newData () {
-      const merged = merge(keyBy(this.listinfo, 'id'), keyBy(this.categories, 'id'));
+      const merged = merge(keyBy(this.mode === 'normal' ? this.listinfo : this.basicListinfo, 'id'), keyBy(this.categories, 'id'));
       const final = values(merged).sort((a, b) => (a.order > b.order) ? 1 : -1);
       const nest = (items, id = null, link = 'parent') =>
         items
@@ -75,6 +82,7 @@ export default {
         this.loading = true;
         const { data } = await this.$axios.get('/user/completion');
         this.listinfo = data.list;
+        this.basicListinfo = data.basicList;
         this.loading = false;
       } catch (err) {
         if (err.response.status === 404) {

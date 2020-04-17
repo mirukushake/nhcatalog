@@ -1,6 +1,7 @@
 import { cacheAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions';
 
 export default function ({ $axios, app, store }) {
+  $axios.setBaseURL(process.env.API_URL);
   const i18n = app.i18n;
   const currentLocale = i18n.getLocaleCookie();
 

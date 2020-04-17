@@ -11,9 +11,12 @@
         <v-list-item v-for="shop in shops" :key="shop.id">
           <v-list-item-content>
             <v-list-item-title class="title font-weight-bold">
-              <nuxt-link :to="`/shops/${shop.id}`">
+              <nuxt-link :to="`/shops/${shop.slug}`">
                 {{ shop.name }}
               </nuxt-link>
+              <div v-if="shop.subtitle" class="grey--text font-weight-regular">
+                {{ shop.subtitle }}
+              </div>
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>

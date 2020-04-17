@@ -14,7 +14,7 @@ const animalSchema = Joi.object({
       species_id: Joi.number().integer().optional(),
       species: Joi.string().optional(),
       image_url: Joi.string().allow(null),
-    })
+    }),
   ),
 });
 
