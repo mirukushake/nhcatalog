@@ -66,12 +66,6 @@ export default {
             eng_name: 'English',
             local_name: 'English',
           },
-          {
-            code: 'ja',
-            file: 'en.json',
-            eng_name: 'Japanese',
-            local_name: '日本語',
-          },
         ],
         defaultLocale: 'en',
         vueI18n: {
