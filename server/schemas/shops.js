@@ -24,6 +24,7 @@ const singleShopSchema = Joi.object({
         name: Joi.string().required(),
         subtitle: Joi.string().optional(),
         currency_name: Joi.string().required(),
+        currency_id: Joi.number().integer().required(),
         id: Joi.number().integer().required(),
         slug: Joi.string().required(),
         price: Joi.allow([null, Joi.number().integer().required()]),

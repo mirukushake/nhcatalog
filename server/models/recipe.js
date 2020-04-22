@@ -7,6 +7,7 @@ class Recipe extends BaseModel {
 
   static get relationMappings () {
     const Item = require('./item');
+    const ItemVariation = require('./itemvariation');
 
     return {
       product: {
@@ -36,6 +37,14 @@ class Recipe extends BaseModel {
             extra: ['qty', 'order'],
           },
           to: 'items.id',
+        },
+      },
+      variations: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: ItemVariation,
+        join: {
+          from: 'recipes.final_item_id',
+          to: 'item_variations.item_id',
         },
       },
     };

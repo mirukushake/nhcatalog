@@ -12,11 +12,11 @@ recipes.route({
     continueOnError: true,
     output: {
       200: {
-        body: schema.recipeListSchema
-        }
+        body: schema.recipeListSchema,
+      },
     },
   },
-  handler: [ getParams, ctrl.listRecipes ],
+  handler: [getParams, ctrl.listRecipes],
 });
 
 recipes.post('/recipes', (ctx) => {

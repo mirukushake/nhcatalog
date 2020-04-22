@@ -42,15 +42,7 @@
               </v-btn>
             </div>
           </template>
-          <template v-slot:item.name="{ item }">
-            <div>{{ item.name }}</div>
-            <div v-if="item.subtitle" class="grey--text">
-              {{ item.subtitle }}
-            </div>
-          </template>
-          <template v-slot:item.cat_name="{ item }">
-            {{ item.cat_name }}
-          </template>
+
           <template v-slot:item.variations="{ item }">
             <template v-if="isLoggedIn">
               <v-item-group
@@ -83,6 +75,12 @@
                 </span>
               </div>
             </template>
+          </template>
+          <template v-slot:item.name="{ item }">
+            <div>{{ item.name }}</div>
+            <div v-if="item.subtitle" class="grey--text">
+              {{ item.subtitle }}
+            </div>
           </template>
         </v-data-table>
         <v-snackbar
@@ -130,9 +128,9 @@ export default {
     },
     headers () {
       return [
-        { text: this.$t('headers.item_name'), value: 'name' },
-        { text: this.$t('headers.category'), value: 'cat_name' },
         { text: '', value: 'variations', sortable: false },
+        { text: this.$t('headers.item_name'), value: 'name' },
+
       ];
     },
     selectedDisable () {
@@ -165,7 +163,7 @@ export default {
         const deletedItems = { listid: this.listinfo.list_id, items: this.selected };
         this.processing = true;
         const newList = await this.$axios.delete(`/user/lists/${deletedItems.listid}`, { data: { deletedItems } });
-        await this.getList();
+        this.listinfo = newList.data.list[0];
         this.processing = false;
         this.selected = [];
         this.snackText = `Deleted ${newList.data.deleted} items from the list.`;

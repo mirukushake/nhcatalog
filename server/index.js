@@ -22,7 +22,7 @@ const app = new Koa();
 const PORT = process.env.SERVER_PORT || 8080;
 
 const corsOptions = {
-  origin: process.env.SITE_URL,
+  origin: '*',
 };
 
 // logging config

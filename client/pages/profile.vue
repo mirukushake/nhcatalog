@@ -240,6 +240,7 @@ export default {
         const lists = await this.$axios.get('/user/lists');
         if (lists) {
           await this.$store.dispatch('user/changeLists', lists.data.lists);
+          await this.$store.dispatch('user/changeItems', lists.data.completed);
           this.processing = false;
         } else {
           this.processing = false;

@@ -189,21 +189,7 @@ export default {
       return this.$store.state.layout.menuItems;
     },
     nav () {
-      if (this.linkData) {
-        const newData = [
-          {
-            icon: 'mdi-information-outline',
-            name: this.$t('menu.information'),
-            children: [
-              { title: this.$t('menu.villagers'), name: 'villagers' },
-              { title: this.$t('menu.special_characters'), name: 'special-characters' },
-              { title: this.$t('menu.shops'), name: 'shops' },
-              // { title: this.$t('menu.recipes'), name: 'recipes' },
-            ],
-          },
-        ].concat(this.linkData);
-        return newData;
-      } else { return []; }
+      return this.$store.state.layout.menuList;
     },
     isLoggedIn () {
       return this.$store.state.auth.loggedIn;
@@ -226,10 +212,19 @@ export default {
       this.currentLocale = this.$i18n.getLocaleCookie();
     },
     async getMenuItems () {
-      const items = await this.$axios.get('/categories');
+      const items = await this.$axios.get('/meta');
       const editflat = items.data.flat.map(x => ({ ...x, name: x.slug, id: x.id, title: x.name }));
       const editlist = items.data.categories.map(y => ({ ...y, children: y.children.map(x => ({ name: x.slug, id: x.id, title: x.name })) }));
-      await this.$store.dispatch('layout/getItems', editflat);
+      await this.$store.dispatch('layout/getItems', { editflat, editlist });
+      await this.$store.dispatch('layout/getLangs', items.data.languages);
+      if (this.isLoggedIn) {
+        const user = await this.$axios.get('/user');
+        await this.$store.dispatch('user/changeSettings', {
+          textLang: user.data.user.userInfo.data_language,
+          subtitleLang: user.data.user.userInfo.subtitles,
+          hemisphere: user.data.user.userInfo.hemisphere,
+        });
+      }
       this.linkData = editlist;
     },
     async getSearch (term) {
@@ -242,8 +237,10 @@ export default {
         this.progress = false;
       }
     },
-    logout () {
-      this.$auth.logout();
+    async logout () {
+      await this.$auth.logout();
+      await this.$store.dispatch('user/changeLists', []);
+      await this.$store.dispatch('user/changeItems', []);
       this.$router.push({ path: '/login' });
     },
   },

@@ -40,11 +40,30 @@
                 >
                   {{ message }}
                 </v-alert>
-                <span class="font-weight-black">Language</span>
-                <v-radio-group v-model="currentLocale" row>
-                  <v-radio v-for="locale in availableLocales" :key="locale.id" :value="locale.code">
+                <span class="font-weight-black">UI Language</span>
+                <v-radio-group v-model="siteLang" row>
+                  <v-radio v-for="locale in availableLocales" :key="locale.code" :value="locale.code">
                     <template v-slot:label>
-                      <span class="text-uppercase">{{ locale.code }}</span>
+                      <span>{{ locale.local_name }}</span>
+                    </template>
+                  </v-radio>
+                </v-radio-group>
+                <v-divider class="mb-4" />
+                <span class="font-weight-black">Item Language</span>
+                <v-radio-group v-model="newSettings.textLang" row>
+                  <v-radio v-for="lang in availableLangs" :key="lang.id" :value="lang.code">
+                    <template v-slot:label>
+                      <span>{{ lang.local_name }}</span>
+                    </template>
+                  </v-radio>
+                </v-radio-group>
+                <v-divider class="mb-4" />
+                <span class="font-weight-black">Subtitles</span>
+                <v-radio-group v-model="newSettings.subtitleLang" row>
+                  <v-radio :label="$t('meta.off') " :value="false" />
+                  <v-radio v-for="lang in availableLangs" :key="lang.id" :value="lang.code">
+                    <template v-slot:label>
+                      <span>{{ lang.local_name }}</span>
                     </template>
                   </v-radio>
                 </v-radio-group>
@@ -54,12 +73,7 @@
                   <v-radio :label="$t('creatures.north_hemisphere') " value="north" />
                   <v-radio :label="$t('creatures.south_hemisphere') " value="south" />
                 </v-radio-group>
-                <v-divider class="mb-4" />
-                <span class="font-weight-black">Subtitles</span>
-                <v-radio-group v-model="newSettings.subtitle" row>
-                  <v-radio :label="$t('meta.on') " :value="true" />
-                  <v-radio :label="$t('meta.off') " :value="false" />
-                </v-radio-group>
+
                 <v-btn depressed class="mr-4 mt-4" color="success" :loading="processing" @click="updateSettings">
                   Save
                 </v-btn>
@@ -135,7 +149,7 @@ export default {
     confirmPassword: { required, sameAs: sameAs(function () { return this.password; }) },
   },
   data: () => ({
-    currentLocale: null,
+    siteLang: null,
     newSettings: {},
     message: null,
     error: null,
@@ -154,6 +168,9 @@ export default {
     },
     availableLocales () {
       return this.$i18n.locales;
+    },
+    availableLangs () {
+      return this.$store.state.layout.languages.filter(l => l.available === true);
     },
     passwordErrors () {
       const errors = [];
@@ -176,20 +193,30 @@ export default {
   },
   methods: {
     getLocale () {
-      this.currentLocale = this.$i18n.getLocaleCookie();
+      this.siteLang = this.$i18n.getLocaleCookie();
     },
     async getSettings () {
-      this.newSettings = await this.$store.state.usersettings.settings;
+      const newSettings = await { ...this.$store.state.user.settings };
+      newSettings.subtitleLang = newSettings.subtitleLang === null ? false : newSettings.subtitleLang;
+      this.newSettings = newSettings;
     },
     async updateSettings () {
       try {
         this.processing = true;
-        await this.$store.dispatch('usersettings/changeSettings', this.newSettings);
-        await this.$i18n.setLocale(this.currentLocale);
-        this.getLocale();
+        const newSettings = this.newSettings;
+        newSettings.subtitleLang = newSettings.subtitleLang === false ? null : newSettings.subtitleLang;
+        await this.$store.dispatch('user/changeSettings', newSettings);
+        const settings = Object.assign({}, { siteLang: this.siteLang }, newSettings);
+        if (this.isLoggedIn) {
+          await this.$axios.patch('/user/settings', settings);
+        }
         this.processing = false;
         this.message = 'Your settings have been saved!';
-        this.$router.go({ path: this.$router.currentRoute.path, force: true });
+        await this.$i18n.setLocale(this.siteLang);
+        const items = await this.$axios.get('/meta');
+        const editflat = items.data.flat.map(x => ({ ...x, name: x.slug, id: x.id, title: x.name }));
+        const editlist = items.data.categories.map(y => ({ ...y, children: y.children.map(x => ({ name: x.slug, id: x.id, title: x.name })) }));
+        await this.$store.dispatch('layout/getItems', { editflat, editlist });
       } catch (err) {
         this.processing = false;
         this.error = 'There was a problem saving your settings.';

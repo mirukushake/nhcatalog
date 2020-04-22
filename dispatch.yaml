@@ -1,0 +1,3 @@
+dispatch:
+  - url: "myapi.nhcatalog.com/*"
+    service: api

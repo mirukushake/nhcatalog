@@ -89,7 +89,7 @@ export default {
       ];
     },
     hemi () {
-      return this.$store.state.usersettings.settings.hemisphere;
+      return this.$store.state.user.settings.hemisphere;
     },
   },
   watch: {

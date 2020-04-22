@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div>
-      <h1 class="display-1 info--text">
-        {{ $t('menu.villagers') }}
+      <h1 v-if="pageInfo" class="display-1 info--text">
+        {{ pageInfo ? pageInfo.title : null }}
       </h1>
     </div>
 
@@ -65,6 +65,10 @@ export default {
     img_url: process.env.IMG_URL,
   }),
   computed: {
+    pageInfo () {
+      const basic = this.$route.path.substr(1);
+      return this.$store.getters['layout/getInfo'](basic);
+    },
     headers () {
       return [
         { text: '', value: 'image_url', sortable: false, width: 100 },
@@ -91,7 +95,7 @@ export default {
     },
   },
   head () {
-    return { title: this.$t('menu.villagers') };
+    return { title: this.pageInfo ? this.pageInfo.title : null };
   },
 };
 </script>

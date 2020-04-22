@@ -145,6 +145,9 @@ export default {
       !this.$v.inviteCode.alphaNum && errors.push('Username must contain only letters and numbers.');
       return errors;
     },
+    userSettings () {
+      return this.$store.state.user.settings;
+    },
   },
   methods: {
     reset () {
@@ -160,7 +163,7 @@ export default {
 
         if (!this.$v.$invalid) {
           this.processing = true;
-          const userinfo = { username: this.username, password: this.password, businessCat: this.businessCat, inviteCode: this.inviteCode };
+          const userinfo = { username: this.username, password: this.password, businessCat: this.businessCat, inviteCode: this.inviteCode, settings: this.userSettings };
           await this.$axios.post('/auth/register', userinfo);
           this.message = 'Your account was created! ';
           await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });
