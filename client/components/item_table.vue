@@ -61,13 +61,23 @@
               <span v-for="(variation, index) in item.variations" :key="variation.id" class="mr-4">
 
                 <v-item v-if="index === 0 || expanded.includes(item.id)" v-slot:default="{ active, toggle }" :value="variation.id">
-                  <v-avatar dark class="my-2" :color="active ? 'accent' : ''">
-                    <v-img
-                      alt="item.name"
-                      max-width="50"
-                      :src="`${img_url}/items/${variation.image_url}`"
-                      @click="toggle"
-                    /></v-avatar></v-item>
+                  <v-badge
+                    color="black--text"
+                    overlap
+                    icon="mdi-check"
+                    bottom
+                    offset-x="13"
+                    offset-y="20"
+                    :value="completedItems.filter(i => i.id === variation.id).length > 0 ? true : false"
+                  >
+                    <v-avatar dark class="my-2" :color="active ? 'accent' : ''">
+                      <v-img
+                        alt="item.name"
+                        max-width="50"
+                        :src="`${img_url}/items/${variation.image_url}`"
+                        @click="toggle"
+                      /></v-avatar>
+                  </v-badge></v-item>
               </span>
             </div>
           </v-item-group>
@@ -94,9 +104,14 @@
       <template v-slot:item.shop[0].price="{ item }">
         <div v-if="item.shop.length">
           <span>
-            {{ item.shop[0].price }} {{ item.shop[0].currency_name }}
+            <v-icon small>{{ item.shop[0].currency_id === 1 ? 'mdi-sack' : 'mdi-cash' }}</v-icon> {{ item.shop[0].price }}
           </span>
         </div>
+      </template>
+      <template v-slot:item.sell_price="{ item }">
+        <span>
+          <v-icon small>mdi-sack</v-icon> {{ item.sell_price }}
+        </span>
       </template>
       <template v-slot:item.obtained="{ item }">
         <div v-if="item.shop.length">
@@ -108,7 +123,7 @@
         </div>
         <div v-if="item.recipes.length > 0">
           <span>
-            recipe
+            Crafting
           </span>
         </div>
       </template>
@@ -165,6 +180,8 @@
 </template>
 
 <script>
+// import { map, find, merge } from 'lodash';
+
 export default {
   name: 'ItemTable',
   props: {
@@ -183,6 +200,7 @@ export default {
     addedSnack: false,
     snackText: null,
     processing: false,
+    vuexworks: 'nope',
   }),
   computed: {
     isLoggedIn () {
@@ -196,15 +214,20 @@ export default {
         { text: '', value: 'image_url', width: 100, sortable: false, align: 'left' },
         { text: this.$t('headers.item_name'), value: 'name' },
         { text: this.$t('headers.variations'), value: 'variations', sortable: false, align: 'center' },
-        // { text: 'Price', value: 'shop[0].price' },
-        // { text: this.$t('headers.sell_price'), value: 'sell_price' },
+        { text: 'Price', value: 'shop[0].price' },
+        { text: this.$t('headers.sell_price'), value: 'sell_price' },
         // { text: this.$t('headers.size'), value: 'size' },
-        // { text: this.$t('headers.obtained'), value: 'obtained', sortable: false },
+        { text: this.$t('headers.obtained'), value: 'obtained', sortable: false },
         { text: this.$t('headers.info'), value: 'info', sortable: false },
       ];
     },
     userLists () {
       return this.$store.state.user.lists;
+    },
+    completedItems () {
+      if (this.$store.state.user.completedItems.length > 0) {
+        return this.$store.state.user.completedItems.map((i) => { i.completed = true; return i; });
+      } else { return this.$store.state.user.completedItems; }
     },
     selectedDisable () {
       if (this.selected.length > 0) {
@@ -217,6 +240,7 @@ export default {
   created () {
     this.getData();
     this.getSearch();
+    this.getCompletion();
   },
   methods: {
     async getData () {
@@ -243,6 +267,9 @@ export default {
         // const listName = this.userLists.filter(n => n.id === list).name;
         this.processing = true;
         const newList = await this.$axios.patch(`/user/lists/${list}`, addedItems);
+        if (newList.data.completed.length > 0) {
+          await this.$store.dispatch('user/changeItems', newList.data.completed);
+        }
         this.processing = false;
         this.selected = [];
         this.snackText = `${newList.data.added} items added to list.`;

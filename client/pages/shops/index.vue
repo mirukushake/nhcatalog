@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div>
-      <h1 class="display-1 info--text">
-        {{ $t('menu.shops') }}
+      <h1 v-if="pageInfo" class="display-1 info--text">
+        {{ pageInfo ? pageInfo.title : null }}
       </h1>
     </div>
 
@@ -34,6 +34,10 @@ export default {
     shops: [],
   }),
   computed: {
+    pageInfo () {
+      const basic = this.$route.path.substr(1);
+      return this.$store.getters['layout/getInfo'](basic);
+    },
   },
   mounted () {
     this.getData();
@@ -51,7 +55,7 @@ export default {
     },
   },
   head () {
-    return { title: this.$t('menu.shops') };
+    return { title: this.pageInfo ? this.pageInfo.title : null };
   },
 };
 </script>

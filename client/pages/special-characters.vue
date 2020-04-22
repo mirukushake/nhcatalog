@@ -1,60 +1,56 @@
 <template>
   <div class="container">
     <div>
-      <h1 class="display-1 info--text">
-        {{ $t('menu.special_characters') }}
+      <h1 v-if="pageInfo" class="display-1 info--text">
+        {{ pageInfo ? pageInfo.title : null }}
       </h1>
     </div>
 
     <section>
-      <v-col cols="8">
-        <v-row>
-          <v-data-table
-            :headers="headers"
-            :items="characters"
-            :loading="loading"
-            :search="search"
-            :footer-props="{
-              'items-per-page-options': [20, 50, 100]
-            }"
-          >
-            <template v-slot:top>
-              <v-toolbar flat color="white">
-                <v-text-field
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Search"
-                  single-line
-                  hide-details
-                />
-              </v-toolbar>
-            </template>
-            <template v-slot:item.image_url="{ item }">
-              <v-avatar dark class="my-2">
-                <v-img
-                  alt="item.name"
-                  max-width="50"
-                  :src="`${img_url}/animals/${item.image_url}`"
-                />
-              </v-avatar>
-            </template>
-            <template v-slot:item.name="{ item }">
-              <div>{{ item.name }}</div>
-              <div v-if="item.subtitle" class="grey--text">
-                {{ item.subtitle }}
-              </div>
-            </template>
-            <template v-slot:item.birthday="{ item }">
-              <div v-if="item.birthday">
-                {{ $dayjs(item.birthday).format('MM/DD') }}
-              </div>
-              <div v-else>
-                {{ $t('common.unknown') }}
-              </div>
-            </template>
-          </v-data-table>
-        </v-row>
-      </v-col>
+      <v-data-table
+        :headers="headers"
+        :items="characters"
+        :loading="loading"
+        :search="search"
+        :footer-props="{
+          'items-per-page-options': [20, 50, 100]
+        }"
+      >
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            />
+          </v-toolbar>
+        </template>
+        <template v-slot:item.image_url="{ item }">
+          <v-avatar dark class="my-2">
+            <v-img
+              alt="item.name"
+              max-width="50"
+              :src="`${img_url}/animals/${item.image_url}`"
+            />
+          </v-avatar>
+        </template>
+        <template v-slot:item.name="{ item }">
+          <div>{{ item.name }}</div>
+          <div v-if="item.subtitle" class="grey--text">
+            {{ item.subtitle }}
+          </div>
+        </template>
+        <template v-slot:item.birthday="{ item }">
+          <div v-if="item.birthday">
+            {{ $dayjs(item.birthday).format('MM/DD') }}
+          </div>
+          <div v-else>
+            {{ $t('common.unknown') }}
+          </div>
+        </template>
+      </v-data-table>
     </section>
   </div>
 </template>
@@ -76,6 +72,10 @@ export default {
         { text: this.$t('headers.birthday'), value: 'birthday' },
       ];
     },
+    pageInfo () {
+      const basic = this.$route.path.substr(1);
+      return this.$store.getters['layout/getInfo'](basic);
+    },
 
   },
   mounted () {
@@ -94,7 +94,7 @@ export default {
     },
   },
   head () {
-    return { title: this.$t('menu.special_characters') };
+    return { title: this.pageInfo ? this.pageInfo.title : null };
   },
 };
 </script>

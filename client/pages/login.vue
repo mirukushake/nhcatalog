@@ -74,6 +74,7 @@ export default {
     username: null,
     password: null,
     processing: false,
+    currentLocale: null,
   }),
   computed: {
     isLoggedIn () {
@@ -104,7 +105,17 @@ export default {
 
         if (!this.$v.$invalid) {
           this.processing = true;
-          await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });
+          const user = await this.$auth.loginWith('local', { data: { password: this.password, username: this.username } });
+          await this.$auth.setUser({ username: user.data.user.userInfo.username, id: user.data.user.userInfo.id });
+          await this.$i18n.setLocale(user.data.user.userInfo.site_language);
+          await this.$store.dispatch('user/changeSettings', {
+            textLang: user.data.user.userInfo.data_language,
+            subtitleLang: user.data.user.userInfo.subtitles,
+            hemisphere: user.data.user.userInfo.hemisphere,
+          });
+          await this.$store.dispatch('user/changeLists', user.data.user.lists);
+          await this.$store.dispatch('user/changeItems', user.data.user.completed);
+          // await this.getLists();
           this.processing = false;
         }
       } catch (err) {

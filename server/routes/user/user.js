@@ -65,14 +65,24 @@ user.route({
 });
 
 user.route({
+  method: 'patch',
+  path: '/user/settings',
+  validate: {
+    type: 'json',
+    continueOnError: true,
+  },
+  handler: [authenticated, ctrl.updateSettings],
+});
+
+user.route({
   method: 'get',
   path: '/user/completion',
   validate: {
-    output: {
-      200: {
-        body: schema.completionSchema,
-      },
-    },
+    // output: {
+    //   200: {
+    //     body: schema.completionSchema,
+    //   },
+    // },
     continueOnError: true,
   },
   handler: [getParams, authenticated, ctrl.getCompletionList],

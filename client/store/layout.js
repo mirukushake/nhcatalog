@@ -1,15 +1,21 @@
 /* eslint-disable arrow-parens */
 export const state = () => ({
   menuItems: [],
+  menuList: [],
   searchTerm: '',
+  languages: [],
 });
 
 export const mutations = {
   setItems (state, list) {
-    state.menuItems = list;
+    state.menuItems = list.editflat;
+    state.menuList = list.editlist;
   },
   setSearch (state, string) {
     state.searchTerm = string;
+  },
+  setLangs (state, list) {
+    state.languages = list;
   },
 };
 
@@ -19,6 +25,9 @@ export const actions = {
   },
   getSearch (context, payload) {
     context.commit('setSearch', payload);
+  },
+  getLangs (context, payload) {
+    context.commit('setLangs', payload);
   },
 };
 

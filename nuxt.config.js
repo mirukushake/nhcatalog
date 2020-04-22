@@ -63,12 +63,14 @@ export default {
           {
             code: 'en',
             file: 'en.json',
-            id: 1,
+            eng_name: 'English',
+            local_name: 'English',
           },
           {
             code: 'ja',
-            file: 'ja.json',
-            id: 2,
+            file: 'en.json',
+            eng_name: 'Japanese',
+            local_name: '日本語',
           },
         ],
         defaultLocale: 'en',
@@ -91,6 +93,7 @@ export default {
         lazy: true,
         vueI18nloader: true,
         langDir: 'lang/',
+        vuex: false,
 
       },
     ],
@@ -100,6 +103,15 @@ export default {
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/auth',
+    ['@nuxtjs/google-gtag',
+      {
+        id: process.env.GA_ID,
+        config: {
+          anonymize_ip: true, // anonymize IP
+          send_page_view: false, // might be necessary to avoid duplicated page track on page reload
+        },
+      },
+    ],
   ],
   /*
   ** Axios module configuration
@@ -117,15 +129,15 @@ export default {
       local: {
         endpoints: {
           login: { url: '/auth/login', method: 'post', propertyName: 'token' },
-          user: { url: '/user', method: 'get', propertyName: 'user' },
+          user: { url: '/user', method: 'get', propertyName: false },
           logout: false,
         },
       },
       redirect: {
         login: '/login',
         logout: '/',
-        home: '/profile',
       },
+
     },
   },
 

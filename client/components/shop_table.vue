@@ -60,13 +60,22 @@
               <span v-for="(variation, index) in item.variations" :key="variation.id" class="mr-4">
 
                 <v-item v-if="index === 0 || expanded.includes(item.id)" v-slot:default="{ active, toggle }" :value="variation.id">
-                  <v-avatar dark class="my-2" :color="active ? 'accent' : ''">
+                  <v-badge
+                    color="black--text"
+                    overlap
+                    icon="mdi-check"
+                    bottom
+                    offset-x="13"
+                    offset-y="20"
+                    :value="completedItems.filter(i => i.id === variation.id).length > 0 ? true : false"
+                  ><v-avatar dark class="my-2" :color="active ? 'accent' : ''">
                     <v-img
                       alt="item.name"
                       max-width="50"
                       :src="`${img_url}/items/${variation.image_url}`"
                       @click="toggle"
-                    /></v-avatar></v-item>
+                    /></v-avatar></v-badge>
+                </v-item>
               </span>
             </div>
           </v-item-group>
@@ -101,7 +110,14 @@
         </nuxt-link>
       </template>
       <template v-slot:item.price="{ item }">
-        {{ item.price }} {{ item.currency_name }}
+        <v-icon small>
+          {{ item.currency_id === 1 ? 'mdi-sack' : 'mdi-cash' }}
+        </v-icon>  {{ item.price }}
+      </template>
+      <template v-slot:item.sell_price="{ item }">
+        <span>
+          <v-icon small>mdi-sack</v-icon> {{ item.sell_price }}
+        </span>
       </template>
     </v-data-table>
     <v-snackbar
@@ -165,7 +181,12 @@ export default {
       ];
     },
     userLists () {
-      return this.$store.state.auth.user.lists;
+      return this.$store.state.user.lists;
+    },
+    completedItems () {
+      if (this.$store.state.user.completedItems.length > 0) {
+        return this.$store.state.user.completedItems.map((i) => { i.completed = true; return i; });
+      } else { return this.$store.state.user.completedItems; }
     },
     selectedDisable () {
       if (this.selected.length > 0) {

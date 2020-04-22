@@ -14,7 +14,38 @@ async function getUser (ctx) {
   try {
     const userid = await ctx.request.jwtPayload.sub;
 
-    const userInfo = await User.query().findById(userid).select('id', 'username', 'site_settings');
+    const userInfo = await User.query().findById(userid).select('id', 'username', 'data_language', 'site_language', 'hemisphere', 'subtitles');
+    const lists = await User.relatedQuery('lists').for(userid);
+    const checked = List.query().where('user_id', userid).andWhere('completion', true);
+    const completed = await List.relatedQuery('variations').for(checked).select('id', 'item_id');
+
+    const userData = { userInfo, lists, completed: (completed || []) };
+
+    if (userInfo) {
+      ctx.status = 200;
+      ctx.body = { user: userData };
+    } else {
+      ctx.throw(404, 'User does not exist.');
+    }
+  } catch (err) {
+    ctx.status = err.status || err.statusCode || 500;
+    ctx.body = { message: err.message };
+  }
+}
+
+async function updateSettings (ctx) {
+  try {
+    const userid = await ctx.request.jwtPayload.sub;
+    const settings = await ctx.request.body;
+
+    const userInfo = await User.query()
+      .patch({
+        data_language: settings.textLang,
+        site_language: settings.siteLang,
+        hemisphere: settings.hemisphere,
+        subtitles: settings.subtitleLang,
+      })
+      .where('id', userid).returning('*');
 
     if (userInfo) {
       ctx.status = 200;
@@ -56,9 +87,12 @@ async function getLists (ctx) {
 
     const allLists = await List.query().where({ user_id: userid }).orderByRaw('lower(title) collate "ja-x-icu"');
 
+    const checked = List.query().where('user_id', userid).andWhere('completion', true);
+    const completed = await List.relatedQuery('variations').for(checked).select('id', 'item_id');
+
     if (allLists) {
       ctx.status = 200;
-      ctx.body = { lists: allLists };
+      ctx.body = { lists: allLists, completed: (completed || []) };
     } else {
       ctx.throw(404, 'Could not find any lists for this user.');
     }
@@ -82,9 +116,12 @@ async function editList (ctx) {
 
       const added = await List.relatedQuery('variations').for(listid).relate(newIds);
 
+      const checked = List.query().where('id', listid).andWhere('completion', true);
+      const completed = await List.relatedQuery('variations').for(checked).select('id', 'item_id');
+
       if (added) {
         ctx.status = 200;
-        ctx.body = { added };
+        ctx.body = { added, completed };
       }
     } else {
       const userid = await ctx.request.jwtPayload.sub;
@@ -159,70 +196,83 @@ async function getCompletionList (ctx) {
     const { language, subtitle } = ctx.state;
     const userid = await ctx.request.jwtPayload.sub;
 
-    const checkComplete = await List.query().where('user_id', userid).andWhere('completion', true);
+    if (ctx.request.query.simple) {
+      const checked = List.query().where('user_id', userid).andWhere('completion', true);
 
-    const listItems = await List.query()
-      .with('total_count', (qb) => {
-        qb.select('items.id')
-          .count('item_variations as total_count')
-          .from('items')
-          .leftJoin('item_variations', 'item_id', 'items.id')
-          .groupBy('items.id');
-      })
-      .with('completed', (qb) => {
-        qb.select('items.id')
-          .count('variation_id as count')
-          .from('userdata.list_items')
-          .join('item_variations', 'variation_id', 'item_variations.id')
-          .join('items', 'item_id', 'items.id')
-          .join('total_count', 'items.id', 'total_count.id')
-          .where('list_id', checkComplete[0].id)
-          .groupBy('items.id');
-      }).select('items.id', 'slug', 'cat_id', 'completed.id as completed_id')
-      .select(raw('coalesce(count, count, 0)::int4 as count, total_count.total_count::int4, coalesce(round((count * 100.0) / total_count.total_count, 1)::int4, 0) as percent'))
-      .from('items')
-      .whereNotIn('cat_id', [18, 20, 29, 30, 31, 32])
-      .leftJoin('completed', 'completed.id', 'items.id')
-      .leftJoin('total_count', 'items.id', 'total_count.id')
-      .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
-      .whereNot('total_count.total_count', 0).orderByRaw('lower(name.name)');
+      const items = await List.relatedQuery('variations').for(checked).select('id', 'item_id');
 
-    const basicListItems = await List.query()
-      .with('completed', (qb) => {
-        qb.select(raw('items.id, case when count(variation_id) > 0 then 1 end as count'))
-          .from('userdata.list_items')
-          .join('item_variations', 'variation_id', 'item_variations.id')
-          .join('items', 'item_id', 'items.id')
-          .where('list_id', checkComplete[0].id)
-          .groupBy('items.id');
-      }).select('items.id', 'slug', 'cat_id', 'completed.id as completed_id')
-      .select(raw('items.id, slug, cat_id, coalesce(count, count, 0)::int4 as count, 1 as total'))
-      .from('items')
-      .whereNotIn('cat_id', [18, 20, 29, 30, 31, 32])
-      .leftJoin('completed', 'completed.id', 'items.id')
-      .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle).orderByRaw('lower(name.name) collate "ja-x-icu"');
-
-    if (!listItems || !basicListItems) {
-      ctx.throw(404, 'List does not exist.');
-    }
-
-    const grouped = _(listItems).groupBy('cat_id').map((objs, key) => ({
-      id: key,
-      count: sumBy(objs, 'count'),
-      total: sumBy(objs, 'total_count'),
-    })).value();
-
-    const basicGrouped = _(basicListItems).groupBy('cat_id').map((objs, key) => ({
-      id: key,
-      count: sumBy(objs, 'count'),
-      total: sumBy(objs, 'total'),
-    })).value();
-
-    if (listItems) {
-      ctx.status = 200;
-      ctx.body = { list: grouped, basicList: basicGrouped };
+      if (items) {
+        ctx.status = 200;
+        ctx.body = { list: items };
+      } else {
+        ctx.throw(404, 'Could not find any lists for this user.');
+      }
     } else {
-      ctx.throw(404, 'Could not find any lists for this user.');
+      const checkComplete = await List.query().where('user_id', userid).andWhere('completion', true);
+
+      const listItems = await List.query()
+        .with('total_count', (qb) => {
+          qb.select('items.id')
+            .count('item_variations as total_count')
+            .from('items')
+            .leftJoin('item_variations', 'item_id', 'items.id')
+            .groupBy('items.id');
+        })
+        .with('completed', (qb) => {
+          qb.select('items.id')
+            .count('variation_id as count')
+            .from('userdata.list_items')
+            .join('item_variations', 'variation_id', 'item_variations.id')
+            .join('items', 'item_id', 'items.id')
+            .join('total_count', 'items.id', 'total_count.id')
+            .where('list_id', checkComplete[0].id)
+            .groupBy('items.id');
+        }).select('items.id', 'slug', 'cat_id', 'completed.id as completed_id')
+        .select(raw('coalesce(count, count, 0)::int4 as count, total_count.total_count::int4, coalesce(round((count * 100.0) / total_count.total_count, 1)::int4, 0) as percent'))
+        .from('items')
+        .whereNotIn('cat_id', [18, 20, 29, 30, 31, 32])
+        .leftJoin('completed', 'completed.id', 'items.id')
+        .leftJoin('total_count', 'items.id', 'total_count.id')
+        .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle)
+        .whereNot('total_count.total_count', 0).orderByRaw('lower(name.name)');
+
+      const basicListItems = await List.query()
+        .with('completed', (qb) => {
+          qb.select(raw('items.id, case when count(variation_id) > 0 then 1 end as count'))
+            .from('userdata.list_items')
+            .join('item_variations', 'variation_id', 'item_variations.id')
+            .join('items', 'item_id', 'items.id')
+            .where('list_id', checkComplete[0].id)
+            .groupBy('items.id');
+        }).select('items.id', 'slug', 'cat_id', 'completed.id as completed_id')
+        .select(raw('items.id, slug, cat_id, coalesce(count, count, 0)::int4 as count, 1 as total'))
+        .from('items')
+        .whereNotIn('cat_id', [18, 20, 29, 30, 31, 32])
+        .leftJoin('completed', 'completed.id', 'items.id')
+        .modify('setLocale', 'item_names', 'item_id', 'items.id', language, subtitle).orderByRaw('lower(name.name) collate "ja-x-icu"');
+
+      if (!listItems || !basicListItems) {
+        ctx.throw(404, 'List does not exist.');
+      }
+
+      const grouped = _(listItems).groupBy('cat_id').map((objs, key) => ({
+        id: key,
+        count: sumBy(objs, 'count'),
+        total: sumBy(objs, 'total_count'),
+      })).value();
+
+      const basicGrouped = _(basicListItems).groupBy('cat_id').map((objs, key) => ({
+        id: key,
+        count: sumBy(objs, 'count'),
+        total: sumBy(objs, 'total'),
+      })).value();
+
+      if (listItems) {
+        ctx.status = 200;
+        ctx.body = { list: grouped, basicList: basicGrouped };
+      } else {
+        ctx.throw(404, 'Could not find any lists for this user.');
+      }
     }
   } catch (err) {
     ctx.status = err.status || err.statusCode || 500;
@@ -241,7 +291,7 @@ async function deleteList (ctx) {
 
       if (deleted) {
         const listItems = await List.query()
-          .where('id', listid)
+          .where('lists.id', listid)
           .joinRelated('user')
           .select('lists.id as list_id', 'lists.*', 'username')
           .withGraphFetched('variations(joinItem)')
@@ -253,6 +303,14 @@ async function deleteList (ctx) {
                 .modify('setLocale', 'item_names', 'item_id', 'item_variations.item_id', language, subtitle).orderByRaw('lower(name.name) collate "ja-x-icu"');
             },
           });
+        const items = groupBy(listItems[0].variations, 'item_id');
+        const result = map(items, (item) => {
+          const { item_id, name, subtitle, cat_name } = item[0];
+          const variations = map(item, variation => pick(variation, ['id', 'image_url', 'color_id']));
+          return { item_id, name, subtitle, cat_name, variations };
+        });
+
+        listItems[0].variations = result;
         ctx.status = 200;
         ctx.body = { list: listItems };
       }
@@ -279,4 +337,4 @@ async function deleteList (ctx) {
   }
 }
 
-module.exports = { getUser, createList, getLists, editList, getSingleList, getCompletionList, deleteList };
+module.exports = { getUser, createList, getLists, editList, getSingleList, getCompletionList, deleteList, updateSettings };

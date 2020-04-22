@@ -24,7 +24,7 @@ export default {
       return this.$store.getters['layout/getInfo']('bugs');
     },
     hemi () {
-      return this.$store.state.usersettings.settings.hemisphere;
+      return this.$store.state.user.settings.hemisphere;
     },
   },
   methods: {

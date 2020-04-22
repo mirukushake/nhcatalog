@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const salt = bcrypt.genSaltSync(+process.env.SALT_ROUNDS);
 const User = require('../models/user');
+const List = require('../models/list');
 const InviteCode = require('../models/invitecode');
 
 const secret = process.env.SECRET;
@@ -14,6 +15,7 @@ async function register (ctx) {
     const password = ctx.request.body.password;
     const username = ctx.request.body.username;
     const code = ctx.request.body.inviteCode;
+    const settings = ctx.request.body.settings;
     const usernameCheck = await User.query().findOne({ username });
     const codeCheck = await InviteCode.query().findOne({ code, user_id: null });
 
@@ -34,7 +36,15 @@ async function register (ctx) {
     }
 
     const hashedPasword = bcrypt.hashSync(password, salt);
-    const userInfo = { username, passwordhash: hashedPasword, role: 3 };
+    const userInfo = {
+      username,
+      passwordhash: hashedPasword,
+      role: 3,
+      data_language: settings.textLang,
+      site_language: settings.siteLang,
+      hemisphere: settings.hemisphere,
+      subtitles: settings.subtitleLang,
+    };
     const newUser = await User.query().insert(userInfo).returning('*');
     await InviteCode.query().update({ user_id: newUser.id }).where({ code });
 
@@ -61,7 +71,14 @@ async function login (ctx) {
       const payload = { sub: user.id };
       const token = jwt.sign(payload, secret);
 
-      ctx.body = { token, user: user.id };
+      const userInfo = await User.query().findById(user.id).select('id', 'username', 'data_language', 'site_language', 'hemisphere', 'subtitles');
+      const lists = await User.relatedQuery('lists').for(user.id);
+      const checked = List.query().where('user_id', user.id).andWhere('completion', true);
+      const completed = await List.relatedQuery('variations').for(checked).select('id', 'item_id');
+
+      const userData = { userInfo, lists, completed: (completed || []) };
+
+      ctx.body = { token, user: userData };
     } else {
       ctx.throw(401, 'Wrong username or password');
     }

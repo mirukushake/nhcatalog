@@ -1,6 +1,7 @@
 const router = require('koa-joi-router');
 // const Joi = router.Joi;
 const categories = require('./data/categories');
+const meta = require('./data/meta');
 const animals = require('./data/animals');
 const items = require('./data/items');
 const creatures = require('./data/creatures');
@@ -15,6 +16,7 @@ const routes = router();
 
 // data routes
 routes.use(categories);
+routes.use(meta);
 routes.use(animals);
 routes.use(items);
 routes.use(creatures);
