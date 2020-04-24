@@ -6,6 +6,19 @@
       </h1>
     </div>
     <dataTable v-if="pageInfo" :id="pageInfo.id" />
+    <!-- <v-btn
+      v-show="fab"
+      v-scroll="onScroll"
+      absolute
+      dark
+      fab
+      bottom
+      right
+      color="accent"
+      @click="toTop"
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn> -->
   </div>
 </template>
 
@@ -17,6 +30,7 @@ export default {
     dataTable,
   },
   data: () => ({
+    fab: false,
   }),
   computed: {
     pageInfo () {
@@ -54,6 +68,14 @@ export default {
         this.processing = false;
         this.dialogError = 'Could not retrieve lists.';
       }
+    },
+    onScroll (e) {
+      if (typeof window === 'undefined') { return; }
+      const top = window.pageYOffset || e.target.scrollTop || 0;
+      this.fab = top > 20;
+    },
+    toTop () {
+      this.$vuetify.goTo(0);
     },
   },
   head () {

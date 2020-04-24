@@ -10,7 +10,8 @@ export const mutations = {
     state.lists = list;
   },
   setItems (state, list) {
-    state.completedItems = list;
+    const complete = list.map((c) => { c.completed = true; });
+    state.completedItems = complete;
   },
   setAllSettings (state, obj) {
     state.settings = obj;

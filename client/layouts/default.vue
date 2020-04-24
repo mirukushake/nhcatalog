@@ -140,6 +140,20 @@
     <v-content>
       <v-container>
         <nuxt />
+        <v-btn
+          v-show="fab"
+          v-scroll="onScroll"
+          fixed
+          dark
+          fab
+          bottom
+          right
+          small
+          color="accent"
+          @click="toTop"
+        >
+          <v-icon>mdi-chevron-up</v-icon>
+        </v-btn>
       </v-container>
     </v-content>
     <v-footer
@@ -182,6 +196,7 @@ export default {
       searchResults: [],
       progress: false,
       error: null,
+      fab: false,
     }
   ),
   computed: {
@@ -242,6 +257,14 @@ export default {
       await this.$store.dispatch('user/changeLists', []);
       await this.$store.dispatch('user/changeItems', []);
       this.$router.push({ path: '/login' });
+    },
+    onScroll (e) {
+      if (typeof window === 'undefined') { return; }
+      const top = window.pageYOffset || e.target.scrollTop || 0;
+      this.fab = top > 20;
+    },
+    toTop () {
+      this.$vuetify.goTo(0);
     },
   },
 };

@@ -2,7 +2,7 @@
   <section>
     <v-data-table
       :headers="headers"
-      :items="items"
+      :items="merged"
       :loading="loading"
       :search="search"
       item-key="id"
@@ -60,20 +60,20 @@
             <div class="d-flex justify-center flex-wrap">
               <span v-for="(variation, index) in item.variations" :key="variation.id" class="mr-4">
 
-                <v-item v-if="index === 0 || expanded.includes(item.id)" v-slot:default="{ active, toggle }" :value="variation.id">
+                <v-item v-if="index === 0" v-slot:default="{ active, toggle }" :value="variation.id">
                   <v-badge
-                    color="black--text"
+                    color="secondary lighten-1 black--text"
                     overlap
                     icon="mdi-check"
                     bottom
-                    offset-x="13"
-                    offset-y="20"
-                    :value="completedItems.filter(i => i.id === variation.id).length > 0 ? true : false"
+                    offset-x="20"
+                    offset-y="30"
+                    :value="variation.completed === true ? true : false"
                   >
-                    <v-avatar dark class="my-2" :color="active ? 'accent' : ''">
+                    <v-avatar dark width="75" height="75" class="my-2" :color="active ? 'accent' : ''">
                       <v-img
                         alt="item.name"
-                        max-width="50"
+                        max-width="75"
                         :src="`${img_url}/items/${variation.image_url}`"
                         @click="toggle"
                       /></v-avatar>
@@ -85,7 +85,7 @@
         <template v-else>
           <div class="d-flex justify-center flex-wrap">
             <span v-for="(variation, index) in item.variations" :key="variation.id" class="mr-4">
-              <v-avatar v-if="index === 0 || expanded.includes(item.id)" dark class="my-2">
+              <v-avatar v-if="index === 0" dark class="my-2">
                 <v-img
                   alt="item.name"
                   max-width="50"
@@ -96,7 +96,7 @@
         </template>
       </template>
       <template v-slot:item.name="{ item }">
-        <div>{{ item.name }}</div>
+        <div><span @click="imgPopUp(item)">{{ item.name }}</span></div>
         <div v-if="item.subtitle" class="grey--text">
           {{ item.subtitle }}
         </div>
@@ -154,11 +154,70 @@
         </v-tooltip>
       </template>
       <template v-slot:item.variations="{ item }">
-        <v-icon v-if="item.variations.length > 1" @click="expandVariation(item.id)">
+        <v-icon v-if="item.variations.length > 1" @click="imgPopUp(item)">
           mdi-more
         </v-icon>
       </template>
     </v-data-table>
+    <v-dialog
+      v-model="imgBox"
+      transition="dialog-transition"
+      max-width="60%"
+    >
+      <v-card>
+        <v-card-title
+          class="headline grey lighten-2"
+          primary-title
+        >
+          {{ currentImg.name }}
+        </v-card-title>
+
+        <v-card-text>
+          <template v-if="isLoggedIn">
+            <v-item-group
+              v-model="selected"
+              multiple
+            >
+              <div class="d-flex justify-center flex-wrap">
+                <span v-for="variation in currentImg.variations" :key="variation.id" class="mr-4">
+
+                  <v-item v-slot:default="{ active, toggle }" :value="variation.id">
+                    <v-badge
+                      color="secondary lighten-1 black--text"
+                      overlap
+                      icon="mdi-check"
+                      bottom
+                      offset-x="20"
+                      offset-y="30"
+                      :value="variation.completed === true ? true : false"
+                    >
+                      <v-avatar dark width="75" height="75" class="my-2" :color="active ? 'accent' : ''">
+                        <v-img
+                          alt="item.name"
+                          max-width="75"
+                          :src="`${img_url}/items/${variation.image_url}`"
+                          @click="toggle"
+                        /></v-avatar>
+                    </v-badge></v-item>
+                </span>
+              </div>
+            </v-item-group>
+          </template>
+          <template v-else>
+            <div class="d-flex justify-center flex-wrap">
+              <span v-for="variation in currentImg.variations" :key="variation.id" class="mr-4">
+                <v-avatar dark class="my-2">
+                  <v-img
+                    alt="item.name"
+                    max-width="50"
+                    :src="`${img_url}/items/${variation.image_url}`"
+                  /></v-avatar>
+              </span>
+            </div>
+          </template>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-snackbar
       v-model="addedSnack"
       left
@@ -180,7 +239,7 @@
 </template>
 
 <script>
-// import { map, find, merge } from 'lodash';
+// import { unionWith } from 'lodash';
 
 export default {
   name: 'ItemTable',
@@ -200,7 +259,8 @@ export default {
     addedSnack: false,
     snackText: null,
     processing: false,
-    vuexworks: 'nope',
+    imgBox: false,
+    currentImg: [],
   }),
   computed: {
     isLoggedIn () {
@@ -213,6 +273,7 @@ export default {
       return [
         { text: '', value: 'image_url', width: 100, sortable: false, align: 'left' },
         { text: this.$t('headers.item_name'), value: 'name' },
+        // { text: this.$t('headers.variations'), value: 'data-table-expand' },
         { text: this.$t('headers.variations'), value: 'variations', sortable: false, align: 'center' },
         { text: 'Price', value: 'shop[0].price' },
         { text: this.$t('headers.sell_price'), value: 'sell_price' },
@@ -224,10 +285,24 @@ export default {
     userLists () {
       return this.$store.state.user.lists;
     },
+    merged () {
+      const items = this.items;
+      if (this.completedItems && this.completedItems.length > 0) {
+        items.map(item => item.variations.map(
+          (i) => {
+            if (this.completedItems.find(x => x.item_id === i.item_id)) {
+              i.completed = true;
+            } else {
+              i.completed = false;
+            }
+          }));
+        return items;
+      } else {
+        return items;
+      }
+    },
     completedItems () {
-      if (this.$store.state.user.completedItems.length > 0) {
-        return this.$store.state.user.completedItems.map((i) => { i.completed = true; return i; });
-      } else { return this.$store.state.user.completedItems; }
+      return this.$store.state.user.completedItems;
     },
     selectedDisable () {
       if (this.selected.length > 0) {
@@ -240,7 +315,6 @@ export default {
   created () {
     this.getData();
     this.getSearch();
-    this.getCompletion();
   },
   methods: {
     async getData () {
@@ -282,6 +356,10 @@ export default {
       if (this.$route.query.search) {
         this.search = await this.$route.query.search;
       }
+    },
+    imgPopUp (index) {
+      this.imgBox = true;
+      this.currentImg = index;
     },
   },
 };
